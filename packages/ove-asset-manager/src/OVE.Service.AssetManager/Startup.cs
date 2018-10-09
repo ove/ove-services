@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OVE.Service.AssetManager.DbContexts;
 using OVE.Service.AssetManager.Domain;
@@ -66,7 +67,11 @@ namespace OVE.Service.AssetManager
             services.AddTransient<FileOperations>();
 
             // use mvc
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddXmlSerializerFormatters().AddJsonOptions(options => {
+                    options.SerializerSettings.Formatting = Formatting.Indented;
+                });
 
             // add the db
             services.AddDbContext<AssetModelContext>(options => options.UseSqlite("Data Source=AssetFiles.db"));

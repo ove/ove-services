@@ -104,7 +104,7 @@ namespace OVE.Service.AssetManager.Domain {
                 _logger.LogInformation("Tried to fire uploader processing but too many threads already running");
                 return;
             }
-
+            // todo simplify
             using (var scope = _serviceProvider.CreateScope()) {
 
                 using (var context = scope.ServiceProvider.GetRequiredService<AssetModelContext>()) {
@@ -112,10 +112,10 @@ namespace OVE.Service.AssetManager.Domain {
                     OVEAssetModel todo = null;
                     try {
 
-                        todo = await context.AssetModels.FirstOrDefaultAsync(i => i.ProcessingState == 2);
+                        todo = await context.AssetModels.FirstOrDefaultAsync(i => i.ProcessingState == 0);
 
                         if (todo != null) {
-                            todo.ProcessingState = 3;
+                            todo.ProcessingState = 1;
                             todo.ProcessingErrors = "uploading";
 
                             context.SaveChanges(); // this may throw a DbUpdateConcurrencyException 

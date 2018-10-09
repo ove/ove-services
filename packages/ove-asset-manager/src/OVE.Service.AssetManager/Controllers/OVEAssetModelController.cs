@@ -1,21 +1,24 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OVE.Service.AssetManager.DbContexts;
 using OVE.Service.AssetManager.Domain;
 using OVE.Service.AssetManager.Models;
 
 namespace OVE.Service.AssetManager.Controllers {
+
     /// <summary>
     /// API operations for upload an Image to the TileService
     /// </summary>
+    [FormatFilter]
     public class OVEAssetModelController : Controller {
         private readonly AssetModelContext _context;
         private readonly ILogger<OVEAssetModelController> _logger;
@@ -32,16 +35,30 @@ namespace OVE.Service.AssetManager.Controllers {
                                    _configuration.GetValue<string>("AssetManagerConfig:BasePath"));
         }
 
+        /// <summary>
+        /// Enable a method to return either an Action View or a .json or .xml file as requested
+        /// By default html is returned. 
+        /// </summary>
+        /// <typeparam name="T">type of result</typeparam>
+        /// <param name="model">the result</param>
+        /// <returns>either a view of the model or the model as xml or json as per request</returns>
+        private ActionResult<T> FormatOrView<T>(T model) {
+            return HttpContext.RequestServices.GetRequiredService<FormatFilter>()?.GetFormat(ControllerContext) == null 
+                ? View(model) 
+                : new ActionResult<T>(model);
+        }
+
         #region Convenience API's 
 
+        #region Find Id of file
         /// <summary>
-        /// Return the guid of an uploaded image 
+        /// Return the guid of an uploaded Asset 
         /// </summary>
-        /// <param name="project">project name</param>
-        /// <param name="name">image name</param>
+        /// <param name="project">Project name</param>
+        /// <param name="name">Asset name</param>
         /// <returns>guid</returns>
         [HttpGet]
-        [Route("/ImageFileController/GetId/")]
+        [Route("/OVEAssetModelController/GetId/")]
         public  async Task<ActionResult<string>> GetId(string project, string name) {
             var imageFileModel = await _context.AssetModels
                 .FirstOrDefaultAsync(m => m.Project == project && m.Name == name);
@@ -59,9 +76,9 @@ namespace OVE.Service.AssetManager.Controllers {
         /// <param name="name">image name</param>
         /// <returns>url of the image</returns>
         [HttpGet]
-        [Route("/ImageFileController/GetImageURL/")]
-        public  async Task<ActionResult<string>> GetImageURL(string project, string name) {
-            return await GetImageURL(m => m.Project == project && m.Name == name);
+        [Route("/OVEAssetModelController/GetAssetURL/")]
+        public  async Task<ActionResult<string>> GetAssetUrl(string project, string name) {
+            return await GetAssetUrl(m => m.Project == project && m.Name == name);
         }
 
         /// <summary>
@@ -70,68 +87,29 @@ namespace OVE.Service.AssetManager.Controllers {
         /// <param name="id">id of the image</param>
         /// <returns>url of the image</returns>
         [HttpGet]
-        [Route("/ImageFileController/GetImageURLbyId/")]
-        public  async Task<ActionResult<string>> GetImageURL(string id) {
-            return await GetImageURL(m => m.Id==id);
+        [Route("/OVEAssetModelController/GetAssetURLbyId/")]
+        public  async Task<ActionResult<string>> GetAssetUrl(string id) {
+            return await GetAssetUrl(m => m.Id==id);
         }
 
-        private async Task<ActionResult<string>> GetImageURL(Expression<Func<OVEAssetModel, bool>> expression) {
-            var imageFileModel = await _context.AssetModels
-                .FirstOrDefaultAsync(expression);
+        #endregion 
 
-            if (imageFileModel == null) {
+        private async Task<ActionResult<string>> GetAssetUrl(Expression<Func<OVEAssetModel, bool>> expression) {
+            var assetModel = await _context.AssetModels.FirstOrDefaultAsync(expression);
+
+            if (assetModel == null) {
                 return NotFound();
             }
 
-            if (imageFileModel.ProcessingState == 4) {
-                return _configuration.GetValue<string>("ASyncUploader:ServiceURL") + imageFileModel.Project + "/" +
-                       imageFileModel.StorageLocation;
+            // todo get from object store 
+            if (assetModel.ProcessingState == 4) {
+                return _configuration.GetValue<string>("ASyncUploader:ServiceURL") + assetModel.Project + "/" +
+                       assetModel.StorageLocation;
             }
             else {
-                return _configuration.GetValue<string>("AssetManagerConfig:BasePath") + imageFileModel.Project + "/" +
-                       imageFileModel.StorageLocation;
+                return _configuration.GetValue<string>("AssetManagerConfig:BasePath") + assetModel.Project + "/" +
+                       assetModel.StorageLocation;
             }
-        }
-
-        /// <summary>
-        /// Return the dzi file url for a given id. 
-        /// </summary>
-        /// <param name="project">project name</param>
-        /// <param name="name">image name</param>
-        /// <returns>url for DZI of the image</returns>
-        [HttpGet]
-        [Route("/ImageFileController/GetImageDZI/")]
-        public  async Task<ActionResult<string>> GetImageDZI(string project, string name) {
-            return await GetImageDZI(m => m.Project ==project && m.Name == name);
-        }
-
-        /// <summary>
-        /// Return the dzi file url for a given id. 
-        /// </summary>
-        /// <param name="id">id of the image</param>
-        /// <returns>url for DZI of the image</returns>
-        [HttpGet]
-        [Route("/ImageFileController/GetImageDZIbyId/")]
-        public  async Task<ActionResult<string>> GetImageDZI(string id) {
-            return await GetImageDZI(m => m.Id==id);
-        }
-
-        private async Task<ActionResult<string>> GetImageDZI(Expression<Func<OVEAssetModel, bool>> expression) {
-            var imageFileModel = await _context.AssetModels
-                .FirstOrDefaultAsync(expression);
-
-            if (imageFileModel == null) {
-                return NotFound();
-            }
-
-            if (imageFileModel.ProcessingState < 2) {
-                return NoContent();
-            }
-
-            var url = _configuration.GetValue<string>("ASyncUploader:ServiceURL")+"/" + imageFileModel.Project + "/" +
-                      Path.ChangeExtension(imageFileModel.StorageLocation, ".dzi");
-
-            return url;
         }
 
         #endregion
@@ -141,7 +119,7 @@ namespace OVE.Service.AssetManager.Controllers {
         /// </summary>
         /// <returns>index page</returns>
         [HttpGet]
-        [Route("/ImageFileController/")]
+        [Route("/OVEAssetModelController/")]
         public async Task<IActionResult> Index() {
             return View(await _context.AssetModels.ToListAsync());
         }
@@ -153,8 +131,8 @@ namespace OVE.Service.AssetManager.Controllers {
         /// <param name="id">guid of the image </param>
         /// <returns>details of the image</returns>
         [HttpGet]
-        [Route("/ImageFileController/Details/{id}")]
-        public async Task<IActionResult> Details(string id) {
+        [Route("/OVEAssetModelController/Details/{id}.{format?}")]
+        public async Task<ActionResult<OVEAssetModel>> Details(string id) {
             if (id == null) {
                 return NotFound();
             }
@@ -165,7 +143,7 @@ namespace OVE.Service.AssetManager.Controllers {
                 return NotFound();
             }
 
-            return View(imageFileModel);
+            return FormatOrView(imageFileModel);
         }
 
         /// <summary>
@@ -174,7 +152,7 @@ namespace OVE.Service.AssetManager.Controllers {
         /// </summary>
         /// <returns>creation gui page</returns>
         [HttpGet]
-        [Route("/ImageFileController/Create")]
+        [Route("/OVEAssetModelController/Create")]
         public IActionResult Create() {
             return View();
         }
@@ -188,8 +166,9 @@ namespace OVE.Service.AssetManager.Controllers {
         /// <returns></returns>
         [HttpPost]
         [DisableRequestSizeLimit]
-        [Route("/ImageFileController/Create")]
-        public async Task<IActionResult> Create([Bind("Project,Name,Description,Service,AssetMeta")] OVEAssetModel oveAssetModel,
+        [Route("/OVEAssetModelController/Create.{format?}")]
+        public async Task<ActionResult<OVEAssetModel>> Create(
+            [Bind("Project,Name,Description,Service,AssetMeta")] OVEAssetModel oveAssetModel,
             [FromForm] IFormFile upload) {
 
             // check if we have a file
@@ -216,7 +195,7 @@ namespace OVE.Service.AssetManager.Controllers {
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(oveAssetModel);
+            return FormatOrView(oveAssetModel);
         }
         
         /// <summary>
@@ -226,8 +205,8 @@ namespace OVE.Service.AssetManager.Controllers {
         /// <param name="id">guid for the image</param>
         /// <returns></returns>
         [HttpGet]
-        [Route("/ImageFileController/Edit/{id}")]
-        public async Task<IActionResult> Edit(string id) {
+        [Route("/OVEAssetModelController/Edit/{id}.{format?}")]
+        public async Task<ActionResult<OVEAssetModel>> Edit(string id) {
             if (id == null) {
                 return NotFound();
             }
@@ -237,7 +216,7 @@ namespace OVE.Service.AssetManager.Controllers {
                 return NotFound();
             }
 
-            return View(imageFileModel);
+            return FormatOrView(imageFileModel);
         }
 
         /// <summary>
@@ -251,8 +230,8 @@ namespace OVE.Service.AssetManager.Controllers {
         /// <returns></returns>
         [HttpPost]
         [DisableRequestSizeLimit]
-        [Route("/ImageFileController/Edit/{id}")]
-        public async Task<IActionResult> Edit(string id, [Bind("Project,Name,Description,Id,StorageLocation,Processed,ProcessingState,Service,AssetMeta")]
+        [Route("/OVEAssetModelController/Edit/{id}.{format?}")]
+        public async Task<ActionResult<OVEAssetModel>> Edit(string id, [Bind("Project,Name,Description,Id,StorageLocation,Processed,ProcessingState,Service,AssetMeta")]
             OVEAssetModel oveAssetModel,[FromForm] IFormFile upload) {
             if (id != oveAssetModel.Id) {
                 return NotFound();
@@ -264,8 +243,8 @@ namespace OVE.Service.AssetManager.Controllers {
             }
 
             // concurrent fields need to be updated by themselves and atomically. 
-            bool need2updateProcessingState = oldImageFileModel.ProcessingState != oveAssetModel.ProcessingState;
-            if (need2updateProcessingState) { 
+            bool need2UpdateProcessingState = oldImageFileModel.ProcessingState != oveAssetModel.ProcessingState;
+            if (need2UpdateProcessingState) { 
                 oveAssetModel.ProcessingState = oldImageFileModel.ProcessingState;
             }
 
@@ -276,14 +255,16 @@ namespace OVE.Service.AssetManager.Controllers {
                     }
                     //stop EF from tracking the old version so that it will allow you to update the new version
                     _context.Entry(oldImageFileModel).State = EntityState.Detached;
-
+                    
                     if (upload != null && upload.Length > 0) {
+
+                        // could upload directly here upload.OpenReadStream()
                         _fileOperations.DeleteFile(oveAssetModel);
                         if (oveAssetModel.ProcessingState == 4) {
                             ASyncUploader.DeleteAssetModel(oveAssetModel, _configuration);
                         }
                         _fileOperations.SaveFile(oveAssetModel,upload);
-                        need2updateProcessingState = true;
+                        need2UpdateProcessingState = true;
                         
                     }
 
@@ -291,7 +272,7 @@ namespace OVE.Service.AssetManager.Controllers {
 
                     await _context.SaveChangesAsync();
 
-                    if (need2updateProcessingState) {
+                    if (need2UpdateProcessingState) {
                          oveAssetModel.ProcessingState = 0;
                         _context.Update(oveAssetModel);
                         await _context.SaveChangesAsync();
@@ -309,7 +290,7 @@ namespace OVE.Service.AssetManager.Controllers {
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(oveAssetModel);
+            return FormatOrView(oveAssetModel);
         }
 
         /// <summary>
@@ -319,8 +300,8 @@ namespace OVE.Service.AssetManager.Controllers {
         /// <param name="id">guid of the image model</param>
         /// <returns>confirm of removal webpage</returns>
         [HttpGet]
-        [Route("/ImageFileController/RemovableView/{id}")]
-        public async Task<IActionResult> GetRemovableView(string id) {
+        [Route("/OVEAssetModelController/RemovableView/{id}.{format?}")]
+        public async Task<ActionResult<OVEAssetModel>> GetRemovableView(string id) {
             if (id == null) {
                 return NotFound();
             }
@@ -331,7 +312,7 @@ namespace OVE.Service.AssetManager.Controllers {
                 return NotFound();
             }
 
-            return View(imageFileModel);
+            return FormatOrView(imageFileModel);
         }
 
         /// <summary>
@@ -339,10 +320,11 @@ namespace OVE.Service.AssetManager.Controllers {
         /// POST: ImageFileModels/Remove/5
         /// </summary>
         /// <param name="id">guid of the image model</param>
+        /// <param name="format">optional format of response (xml or json)</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/ImageFileController/Remove/{id}")]
-        public async Task<IActionResult> Remove(string id) {
+        [Route("/OVEAssetModelController/Remove/{id}.{format?}")]
+        public async Task<ActionResult<bool>> Remove(string id,string format) {
             var imageFileModel = await _context.AssetModels.FindAsync(id);
             _context.AssetModels.Remove(imageFileModel);
             await _context.SaveChangesAsync();
@@ -352,7 +334,7 @@ namespace OVE.Service.AssetManager.Controllers {
                 ASyncUploader.DeleteAssetModel(imageFileModel, _configuration);
             }
 
-            return RedirectToAction(nameof(Index));
+            return string.IsNullOrWhiteSpace(format) ? RedirectToAction(nameof(Index)) : FormatOrView(true);
         }
 
         private bool ImageFileModelExists(string id) {
