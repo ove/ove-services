@@ -24,7 +24,8 @@ namespace OVE.Service.AssetManager.Controllers {
         private readonly ILogger<OVEAssetModelController> _logger;
         private readonly IConfiguration _configuration;
         private readonly IAssetFileOperations _fileOperations;
-        
+        private readonly ServiceRepository _serviceRepository;
+
         /// <summary>
         /// Create a new API controller for OVE Asset Models
         /// </summary>
@@ -33,11 +34,12 @@ namespace OVE.Service.AssetManager.Controllers {
         /// <param name="configuration">config from appsettings.json</param>
         /// <param name="fileOperations"></param>
         public OVEAssetModelController(AssetModelContext context, ILogger<OVEAssetModelController> logger,
-            IConfiguration configuration, IAssetFileOperations fileOperations) {
+            IConfiguration configuration, IAssetFileOperations fileOperations,ServiceRepository serviceRepository) {
             _context = context;
             _logger = logger;
             _configuration = configuration;
             _fileOperations = fileOperations;
+            _serviceRepository = serviceRepository;
             _logger.LogInformation("started ImageFilModels Controller with the following path " +
                                    _configuration.GetValue<string>("AssetManagerConfig:BasePath"));
         }
@@ -102,14 +104,13 @@ namespace OVE.Service.AssetManager.Controllers {
         #endregion 
 
         private async Task<ActionResult<string>> GetAssetUrl(Expression<Func<OVEAssetModel, bool>> expression) {
-            var assetModel = await _context.AssetModels.FirstOrDefaultAsync(expression);
+            var assetModel = await _context.AssetModels.Where(expression).OrderByDescending(m=> m.LastModified).FirstOrDefaultAsync();
 
             if (assetModel == null) {
                 return NotFound();
             }
 
             return _fileOperations.ResolveFileUrl(assetModel);
-
         }
 
         #endregion
@@ -176,7 +177,11 @@ namespace OVE.Service.AssetManager.Controllers {
                 _logger.LogError("failed to upload a file");
                 ModelState.AddModelError("Filename", "Failed to upload file");
             }
-            else {
+
+            if (!_serviceRepository.ValidateServiceChoice(oveAssetModel.Service, upload)) {
+                ModelState.AddModelError("Service", "Service does not support File Type");
+            }
+            if (ModelState.IsValid) {
                 // then try and save it
                 try {
                     await _fileOperations.SaveFile(oveAssetModel, upload);
@@ -248,6 +253,10 @@ namespace OVE.Service.AssetManager.Controllers {
                 oveAssetModel.ProcessingState = oldImageFileModel.ProcessingState;
             }
 
+            if (!_serviceRepository.ValidateServiceChoice(oveAssetModel.Service, upload)) {
+                ModelState.AddModelError("Service", "Service does not support File Type");
+            }
+            
             if (ModelState.IsValid) {
                 try {
                     if (oldImageFileModel.Project != oveAssetModel.Project) {

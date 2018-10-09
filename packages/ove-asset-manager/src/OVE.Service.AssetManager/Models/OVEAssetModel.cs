@@ -40,7 +40,7 @@ namespace OVE.Service.AssetManager.Models {
         public string Service { get; set; }
 
         /// <summary>
-        /// This is the actual location of the file on the filesystem (todo this will change to object store reference)
+        /// This is the actual location of the file on the object store
         /// </summary>
         [ScaffoldColumn(false)]
         public string StorageLocation { get; set; }

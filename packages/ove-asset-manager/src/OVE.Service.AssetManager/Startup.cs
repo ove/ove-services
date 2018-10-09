@@ -61,11 +61,12 @@ namespace OVE.Service.AssetManager
             
             // dependency injection of domain classes 
             services.AddSingleton(Configuration);
+            services.AddSingleton<ServiceRepository>();
             services.AddTransient<IAssetFileOperations,S3AssetFileOperations>();
 
             // use mvc
             services.AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .AddXmlSerializerFormatters().AddJsonOptions(options => {
                     options.SerializerSettings.Formatting = Formatting.Indented;
                 });
