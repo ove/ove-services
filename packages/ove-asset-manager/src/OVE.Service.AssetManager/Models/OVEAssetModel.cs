@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
@@ -27,6 +28,9 @@ namespace OVE.Service.AssetManager.Models {
         public string Name { get; set; }
         
         public string Description { get; set; }
+
+        [ScaffoldColumn(false)]
+        public DateTime LastModified { get; set; } = DateTime.Now;
 
         /// <summary>
         /// Specify which service this asset should be processed by

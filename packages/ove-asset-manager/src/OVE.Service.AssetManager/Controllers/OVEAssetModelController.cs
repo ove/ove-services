@@ -60,8 +60,8 @@ namespace OVE.Service.AssetManager.Controllers {
         [HttpGet]
         [Route("/OVEAssetModelController/GetId/")]
         public  async Task<ActionResult<string>> GetId(string project, string name) {
-            var imageFileModel = await _context.AssetModels
-                .FirstOrDefaultAsync(m => m.Project == project && m.Name == name);
+            var imageFileModel = await _context.AssetModels.Where(m => m.Project == project && m.Name == name)
+                                                     .OrderByDescending(m=> m.LastModified).FirstOrDefaultAsync();
 
             if (imageFileModel == null) {
                 return NotFound();
@@ -231,7 +231,7 @@ namespace OVE.Service.AssetManager.Controllers {
         [HttpPost]
         [DisableRequestSizeLimit]
         [Route("/OVEAssetModelController/Edit/{id}.{format?}")]
-        public async Task<ActionResult<OVEAssetModel>> Edit(string id, [Bind("Project,Name,Description,Id,StorageLocation,Processed,ProcessingState,Service,AssetMeta")]
+        public async Task<ActionResult<OVEAssetModel>> Edit(string id, [Bind("Project,Name,Description,Id,StorageLocation,Processed,ProcessingState,Service,AssetMeta,LastModified")]
             OVEAssetModel oveAssetModel,[FromForm] IFormFile upload) {
             if (id != oveAssetModel.Id) {
                 return NotFound();
@@ -267,7 +267,7 @@ namespace OVE.Service.AssetManager.Controllers {
                         need2UpdateProcessingState = true;
                         
                     }
-
+                    oveAssetModel.LastModified = DateTime.Now;
                     _context.Update(oveAssetModel);
 
                     await _context.SaveChangesAsync();
@@ -321,10 +321,10 @@ namespace OVE.Service.AssetManager.Controllers {
         /// </summary>
         /// <param name="id">guid of the image model</param>
         /// <param name="format">optional format of response (xml or json)</param>
-        /// <returns></returns>
+        /// <returns>true or error message</returns>
         [HttpPost]
         [Route("/OVEAssetModelController/Remove/{id}.{format?}")]
-        public async Task<ActionResult<bool>> Remove(string id,string format) {
+        public async Task<ActionResult<bool>> Remove(string id,string format = null) {
             var imageFileModel = await _context.AssetModels.FindAsync(id);
             _context.AssetModels.Remove(imageFileModel);
             await _context.SaveChangesAsync();

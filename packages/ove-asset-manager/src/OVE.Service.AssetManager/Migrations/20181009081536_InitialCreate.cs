@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace OVE.Service.AssetManager.Migrations
 {
@@ -14,6 +15,7 @@ namespace OVE.Service.AssetManager.Migrations
                     Project = table.Column<string>(maxLength: 63, nullable: false),
                     Name = table.Column<string>(maxLength: 50, nullable: false),
                     Description = table.Column<string>(nullable: true),
+                    LastModified = table.Column<DateTime>(nullable: false),
                     Service = table.Column<string>(nullable: false),
                     StorageLocation = table.Column<string>(nullable: true),
                     ProcessingErrors = table.Column<string>(nullable: true),
