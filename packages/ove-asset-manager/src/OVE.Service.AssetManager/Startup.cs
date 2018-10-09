@@ -58,13 +58,10 @@ namespace OVE.Service.AssetManager
                 x.ValueLengthLimit = int.MaxValue;
                 x.MultipartBodyLengthLimit = int.MaxValue; // In case of multipart
             });
-
-            //start the uploader microservice 
-            services.AddHostedService<ASyncUploader>();
-
+            
             // dependency injection of domain classes 
             services.AddSingleton(Configuration);
-            services.AddTransient<FileOperations>();
+            services.AddTransient<S3AssetFileOperations>();
 
             // use mvc
             services.AddMvc()

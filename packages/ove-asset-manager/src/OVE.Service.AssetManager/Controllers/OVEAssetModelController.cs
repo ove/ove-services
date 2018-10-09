@@ -23,14 +23,21 @@ namespace OVE.Service.AssetManager.Controllers {
         private readonly AssetModelContext _context;
         private readonly ILogger<OVEAssetModelController> _logger;
         private readonly IConfiguration _configuration;
-        private readonly FileOperations _fileOperations;
+        private readonly IAssetFileOperations _s3AssetFileOperations;
         
+        /// <summary>
+        /// Create a new API controller for OVE Asset Models
+        /// </summary>
+        /// <param name="context">Database Context</param>
+        /// <param name="logger">logger</param>
+        /// <param name="configuration">config from appsettings.json</param>
+        /// <param name="s3AssetFileOperations"></param>
         public OVEAssetModelController(AssetModelContext context, ILogger<OVEAssetModelController> logger,
-            IConfiguration configuration, FileOperations fileOperations) {
+            IConfiguration configuration, IAssetFileOperations s3AssetFileOperations) {
             _context = context;
             _logger = logger;
             _configuration = configuration;
-            _fileOperations = fileOperations;
+            _s3AssetFileOperations = s3AssetFileOperations;
             _logger.LogInformation("started ImageFilModels Controller with the following path " +
                                    _configuration.GetValue<string>("AssetManagerConfig:BasePath"));
         }
@@ -179,9 +186,9 @@ namespace OVE.Service.AssetManager.Controllers {
             else {
                 // then try and save it
                 try {
-                    _fileOperations.SaveFile(oveAssetModel, upload);
+                    await _s3AssetFileOperations.SaveFile(oveAssetModel, upload);
 
-                    _logger.LogInformation("received a file :) " + oveAssetModel.StorageLocation);
+                    _logger.LogInformation("received and uploaded a file :) " + oveAssetModel.StorageLocation);
                 }
                 catch (Exception e) {
                     _logger.LogError(e, "failed to upload a file and write it to " + oveAssetModel.StorageLocation);
@@ -251,21 +258,20 @@ namespace OVE.Service.AssetManager.Controllers {
             if (ModelState.IsValid) {
                 try {
                     if (oldImageFileModel.Project != oveAssetModel.Project) {
-                        _fileOperations.MoveFile(oldImageFileModel, oveAssetModel);
+                       await _s3AssetFileOperations.MoveFile(oldImageFileModel, oveAssetModel); // todo not implemented
                     }
                     //stop EF from tracking the old version so that it will allow you to update the new version
                     _context.Entry(oldImageFileModel).State = EntityState.Detached;
                     
                     if (upload != null && upload.Length > 0) {
-
-                        // could upload directly here upload.OpenReadStream()
-                        _fileOperations.DeleteFile(oveAssetModel);
-                        if (oveAssetModel.ProcessingState == 4) {
-                            ASyncUploader.DeleteAssetModel(oveAssetModel, _configuration);
+                        if (!await _s3AssetFileOperations.DeleteFile(oveAssetModel)) {
+                            return UnprocessableEntity("unable to delete old file");
                         }
-                        _fileOperations.SaveFile(oveAssetModel,upload);
+
+                        if (!await _s3AssetFileOperations.SaveFile(oveAssetModel, upload)) {
+                            return UnprocessableEntity("unable to save new file");
+                        }
                         need2UpdateProcessingState = true;
-                        
                     }
                     oveAssetModel.LastModified = DateTime.Now;
                     _context.Update(oveAssetModel);
@@ -326,13 +332,15 @@ namespace OVE.Service.AssetManager.Controllers {
         [Route("/OVEAssetModelController/Remove/{id}.{format?}")]
         public async Task<ActionResult<bool>> Remove(string id,string format = null) {
             var imageFileModel = await _context.AssetModels.FindAsync(id);
+
+            // delete files
+            if (!await _s3AssetFileOperations.DeleteFile(imageFileModel)) {
+                return UnprocessableEntity("failed to delete s3 files");
+            }
+            
+            // delete in db
             _context.AssetModels.Remove(imageFileModel);
             await _context.SaveChangesAsync();
-
-            _fileOperations.DeleteFile(imageFileModel);
-            if (imageFileModel.ProcessingState == 4) {
-                ASyncUploader.DeleteAssetModel(imageFileModel, _configuration);
-            }
 
             return string.IsNullOrWhiteSpace(format) ? RedirectToAction(nameof(Index)) : FormatOrView(true);
         }

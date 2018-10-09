@@ -78,5 +78,10 @@ namespace OVE.Service.AssetManager.Models {
             return filepath;
         }
 
+        public override string ToString() {
+            return$"{nameof(Id)}: {Id}, {nameof(Project)}: {Project}, {nameof(Name)}: {Name}," +
+                  $" {nameof(Service)}: {Service}, {nameof(StorageLocation)}: {StorageLocation}," +
+                  $" {nameof(ProcessingErrors)}: {ProcessingErrors}, {nameof(ProcessingState)}: {ProcessingState}";
+        }
     }
 }
