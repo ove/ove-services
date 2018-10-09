@@ -173,7 +173,7 @@ namespace OVE.Service.AssetManager.Controllers {
         /// <returns></returns>
         [HttpPost]
         [DisableRequestSizeLimit]
-        [Route("/OVEAssetModelController/Create.{format?}")]
+        [Route("/OVEAssetModelController/Create/{format?}")]
         public async Task<ActionResult<OVEAssetModel>> Create(
             [Bind("Project,Name,Description,Service,AssetMeta")] OVEAssetModel oveAssetModel,
             [FromForm] IFormFile upload) {

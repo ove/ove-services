@@ -61,7 +61,7 @@ namespace OVE.Service.AssetManager
             
             // dependency injection of domain classes 
             services.AddSingleton(Configuration);
-            services.AddTransient<S3AssetFileOperations>();
+            services.AddTransient<IAssetFileOperations,S3AssetFileOperations>();
 
             // use mvc
             services.AddMvc()
