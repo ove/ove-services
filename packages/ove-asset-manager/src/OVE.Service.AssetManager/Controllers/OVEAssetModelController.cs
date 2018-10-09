@@ -185,7 +185,7 @@ namespace OVE.Service.AssetManager.Controllers {
                 }
                 catch (Exception e) {
                     _logger.LogError(e, "failed to upload a file and write it to " + oveAssetModel.StorageLocation);
-                    ModelState.AddModelError("Filename", "Failed to upload file");
+                    ModelState.AddModelError("StorageLocation", "Failed to upload file");
                 }
             }
 

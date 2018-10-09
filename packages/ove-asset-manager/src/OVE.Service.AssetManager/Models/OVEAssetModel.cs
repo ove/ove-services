@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
+using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -43,6 +44,15 @@ namespace OVE.Service.AssetManager.Models {
         /// </summary>
         [ScaffoldColumn(false)]
         public string StorageLocation { get; set; }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public string GetStorageGuid() {
+            return this.StorageLocation.Split(",")?.FirstOrDefault();
+        }
 
         /// <summary>
         /// How far processing has progressed
