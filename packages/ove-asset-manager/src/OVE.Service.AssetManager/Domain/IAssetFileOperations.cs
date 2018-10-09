@@ -4,7 +4,8 @@ using OVE.Service.AssetManager.Models;
 
 namespace OVE.Service.AssetManager.Domain {
     public interface IAssetFileOperations {
-        Task<bool> MoveFile(OVEAssetModel oldImage, OVEAssetModel newImage);
+        string ResolveFileUrl(OVEAssetModel asset);
+        Task<bool> MoveFile(OVEAssetModel oldAsset, OVEAssetModel newAsset);
         Task<bool> DeleteFile(OVEAssetModel oveAssetModel);
         Task<bool> SaveFile(OVEAssetModel oveAssetModel, IFormFile upload);
     }

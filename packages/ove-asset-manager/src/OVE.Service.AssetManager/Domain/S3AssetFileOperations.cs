@@ -16,6 +16,11 @@ namespace OVE.Service.AssetManager.Domain {
 
         private readonly ILogger<S3AssetFileOperations> _logger;
         private readonly IConfiguration _configuration;
+
+        private const string S3ClientAccessKey = "s3Client:AccessKey";
+        private const string S3ClientSecret = "s3Client:Secret";
+        private const string S3ClientServiceUrl = "s3Client:ServiceURL";
+        private const string S3ClientDownloadUrl = "s3Client:DownloadURL";
         
         public S3AssetFileOperations(ILogger<S3AssetFileOperations> logger, IConfiguration configuration) {
             _logger = logger;
@@ -23,11 +28,12 @@ namespace OVE.Service.AssetManager.Domain {
         }
         
         private IAmazonS3 GetS3Client(IConfiguration configuration) {
+            
             IAmazonS3 s3Client = new AmazonS3Client(
-                configuration.GetValue<string>("ASyncUploader:AccessKey"),
-                configuration.GetValue<string>("ASyncUploader:Secret"),
+                configuration.GetValue<string>(S3ClientAccessKey),
+                configuration.GetValue<string>(S3ClientSecret),
                 new AmazonS3Config {
-                    ServiceURL = configuration.GetValue<string>("ASyncUploader:ServiceURL"),
+                    ServiceURL = configuration.GetValue<string>(S3ClientServiceUrl),
                     UseHttp = true, 
                     ForcePathStyle = true
                 }
@@ -38,7 +44,12 @@ namespace OVE.Service.AssetManager.Domain {
         
         #region Implementation of IFileOperations
 
-        public async Task<bool> MoveFile(OVEAssetModel oldImage, OVEAssetModel newImage) {
+        public string ResolveFileURL(OVEAssetModel asset) {
+            var url = _configuration.GetValue<string>(S3ClientDownloadUrl)+ Path.GetFileNameWithoutExtension(asset.StorageLocation) + "/" + asset.StorageLocation;
+            return url;
+        }
+
+        public async Task<bool> MoveFile(OVEAssetModel oldAsset, OVEAssetModel newAsset) {
             //todo this is hard because we might have to move between s3 buckets and that is complex
             // https://stackoverflow.com/questions/9664904/best-way-to-move-files-between-s3-buckets
             throw new System.NotImplementedException();
