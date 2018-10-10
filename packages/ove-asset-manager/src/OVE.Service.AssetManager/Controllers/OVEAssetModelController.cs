@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -43,9 +44,65 @@ namespace OVE.Service.AssetManager.Controllers {
                                    _configuration.GetValue<string>("AssetManagerConfig:BasePath"));
         }
 
+        #region List API's
+
+        /// <summary>
+        /// Return all assets
+        /// you may paginate by supplying optional parameters pos and count
+        /// specify format by appending .json or .xml to url
+        /// This api is not ordered by last modified to avoid db overhead. 
+        /// </summary>
+        /// <param name="pos">pos to start at (zero based)</param>
+        /// <param name="count">number to return</param>
+        /// <returns>a list of Assets</returns>
+        [HttpGet]
+        [Route("/OVEAssetModelController/ListAllAssets/{pos?}{count?}{.format?}")]
+        public async Task<ActionResult<List<OVEAssetModel>>> ListAllAssets(int pos = 0, int count = 100) {
+            var res = await _context.AssetModels.Skip(pos).Take(count).ToListAsync();
+            return this.FormatOrView(res);
+        }
+
+        /// <summary>
+        /// Return all assets for a given Project 
+        /// you may paginate by supplying optional parameters pos and count
+        /// specify format by appending .json or .xml to url
+        /// response ordered by last modified 
+        /// </summary>
+        /// <param name="project">the project</param>
+        /// <param name="pos">pos to start at (zero based)</param>
+        /// <param name="count">number to return</param>
+        /// <returns>a list of Assets</returns>
+        [HttpGet]
+        [Route("/OVEAssetModelController/ListAssets/{project}/{pos?}{count?}{.format?}")]
+        public async Task<ActionResult<List<OVEAssetModel>>> ListAssets(string project, int pos = 0, int count = 100) {
+            var res = await _context.AssetModels.Where(a => a.Project ==project).OrderByDescending(a=> a.LastModified).Skip(pos).Take(count).ToListAsync();
+            return this.FormatOrView(res);
+        }
+
+        /// <summary>
+        /// Return all assets for a given Project and Name
+        /// Use this to get versions of the same Asset 
+        /// you may paginate by supplying optional parameters pos and count
+        /// specify format by appending .json or .xml to url
+        /// response ordered by last modified 
+        /// </summary>
+        /// <param name="project">the project</param>
+        /// <param name="name"></param>
+        /// <param name="pos">pos to start at (zero based)</param>
+        /// <param name="count">number to return</param>
+        /// <returns>a list of Assets</returns>
+        [HttpGet]
+        [Route("/OVEAssetModelController/ListAssets/Project/Name/{pos?}{count?}{.format?}")]
+        public async Task<ActionResult<List<OVEAssetModel>>> ListAssets(string project,string name, int pos = 0, int count = 100) {
+            var res = await _context.AssetModels.Where(a => a.Project ==project && a.Name == name).OrderByDescending(a=> a.LastModified).Skip(pos).Take(count).ToListAsync();
+            return this.FormatOrView(res);
+        }
+
+        #endregion
+
         #region Convenience API's 
 
-        #region Find Id of file
+        #region Find Id of Asset
         /// <summary>
         /// Return the guid of an uploaded Asset 
         /// </summary>
