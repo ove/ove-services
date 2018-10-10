@@ -13,6 +13,12 @@ namespace OVE.Service.AssetManager.Domain {
         /// List of file types permitted e.g. .png
         /// lowercase with period please. 
         /// </summary>
-        public List<string> FileTypes { get; set; } 
+        public List<string> FileTypes { get; set; }
+
+        /// <summary>
+        /// Provide a url for viewing a given asset.
+        /// Must include {id} which will be replaced with id of asset
+        /// </summary>
+        public string ViewIFrameUrl { get; set; }
     }
 }

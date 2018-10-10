@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using OVE.Service.AssetManager.Models;
 
 namespace OVE.Service.AssetManager.Domain {
     /// <summary>
@@ -50,6 +51,19 @@ namespace OVE.Service.AssetManager.Domain {
                 _logger.LogError("request for unknown service "+name);
             }
             return res;
+        }
+
+        // ReSharper disable once UnusedMember.Global << used in view
+        public string GetViewURL(OVEAssetModel model) {
+            var service = GetService(model.Service);
+            if (service == null) {
+                return "";
+            }
+            
+            var url = service.ViewIFrameUrl;
+            return string.IsNullOrWhiteSpace(url) 
+                ? "" 
+                : url.Replace("{id}", model.Id);
         }
     }
 }

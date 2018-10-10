@@ -1,4 +1,6 @@
 ﻿@model OVE.Service.AssetManager.Models.OVEAssetModel
+@using OVE.Service.AssetManager.Domain
+@inject ServiceRepository Services
 
 @{
     ViewData["Title"] = "Delete";
@@ -30,10 +32,14 @@
             @Html.DisplayFor(model => model.Description)
         </dd>
     </dl>
-    
+
     <form asp-action="Remove">
         <input type="hidden" asp-for="Id" />
         <input type="submit" value="Remove" class="btn btn-default" /> |
         <a asp-action="Index">Back to List</a>
     </form>
+</div>
+
+<div>
+    <iframe src="@{ Services.GetViewURL(Model);}" onload="this.width=screen.width;this.height=1000px;" />
 </div>
