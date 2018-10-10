@@ -44,6 +44,43 @@ namespace OVE.Service.AssetManager.Controllers {
                                    _configuration.GetValue<string>("AssetManagerConfig:BasePath"));
         }
 
+        #region Asset Processing API's
+
+        /// <summary>
+        /// Atomically get the next asset for working on for a given service
+        /// Atomic update collisions will issue a 409 No Conflict, you should retry your request.
+        /// spec if you want json or xml by appending .json or .xml
+        /// </summary>
+        /// <param name="service">service name</param>
+        /// <returns>Asset or 204 NoContent or 409 Conflict</returns>
+        [HttpGet]
+        [Route("/OVEAssetModelController/GetWorkItem/{service}.{format?}")]
+        public async Task<ActionResult<OVEAssetModel>> GetWorkItem(string service) {
+            var oveService = _serviceRepository.GetService(service);
+            try {
+
+                var todo = await _context.AssetModels.FirstOrDefaultAsync(a =>a.Service ==oveService.Name && a.ProcessingState == 0);
+
+                if (todo != null) {
+                    todo.ProcessingState = 1;
+                    todo.ProcessingErrors = "processing";
+
+                    _context.SaveChanges();// this may throw a DbUpdateConcurrencyException if someone else is trying to update at the same time
+                }
+
+                return todo == null ? NoContent() : this.FormatOrView(todo);
+            } catch (DbUpdateConcurrencyException e) {
+                // do nothing this is intended to stop multiple 
+                _logger.LogDebug("stopped double processing"+e);
+                return Conflict("please try again");
+            } catch (Exception e) {
+                _logger.LogError(e, "Exception obtaining work items");
+                return Conflict("please try again");
+            }
+        }
+
+        #endregion
+
         #region List API's
 
         /// <summary>
@@ -110,7 +147,7 @@ namespace OVE.Service.AssetManager.Controllers {
         /// <param name="name">Asset name</param>
         /// <returns>guid</returns>
         [HttpGet]
-        [Route("/OVEAssetModelController/GetId/")]
+        [Route("/OVEAssetModelController/GetId/.{format?}")]
         public  async Task<ActionResult<string>> GetId(string project, string name) {
             var imageFileModel = await _context.AssetModels.Where(m => m.Project == project && m.Name == name)
                                                      .OrderByDescending(m=> m.LastModified).FirstOrDefaultAsync();
@@ -118,7 +155,7 @@ namespace OVE.Service.AssetManager.Controllers {
             if (imageFileModel == null) {
                 return NotFound();
             }
-            return imageFileModel.Id;
+            return this.FormatOrView(imageFileModel.Id);
         }
 
         /// <summary>

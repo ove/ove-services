@@ -43,5 +43,12 @@ namespace OVE.Service.AssetManager.Domain {
             _logger.LogInformation("Updated Service "+service.Name);
             this._knownServices.AddOrUpdate(service.Name, k => service, (k, v) => service);
         }
+
+        public OVEService GetService(string name) {
+            if (!_knownServices.TryGetValue(name, out var res)) {
+                _logger.LogError("request for unknown service "+name);
+            }
+            return res;
+        }
     }
 }
