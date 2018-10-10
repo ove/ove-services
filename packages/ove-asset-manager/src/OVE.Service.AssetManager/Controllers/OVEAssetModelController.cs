@@ -84,7 +84,7 @@ namespace OVE.Service.AssetManager.Controllers {
         /// <param name="message">messages e.g. errors</param>
         /// <returns>Asset or 204 NoContent or 409 Conflict</returns>
         [HttpPost]
-        [Route("/OVEAssetModelController/SetProcessingState/{id}{state}.{format?}")]
+        [Route("/OVEAssetModelController/SetProcessingState/{id}/{state}/{format?}")]
         public async Task<ActionResult<OVEAssetModel>> SetProcessingState(string id, int state, string message) {
             if (id == null) {
                 return NotFound();
@@ -179,7 +179,7 @@ namespace OVE.Service.AssetManager.Controllers {
         /// <param name="count">number to return</param>
         /// <returns>a list of Assets</returns>
         [HttpGet]
-        [Route("/OVEAssetModelController/ListAllAssets/{pos?}{count?}{.format?}")]
+        [Route("/OVEAssetModelController/ListAllAssets/{pos}/{count}.{format?}")]
         public async Task<ActionResult<List<OVEAssetModel>>> ListAllAssets(int pos = 0, int count = 100) {
             var res = await _context.AssetModels.Skip(pos).Take(count).ToListAsync();
             return this.FormatOrView(res);
@@ -188,7 +188,7 @@ namespace OVE.Service.AssetManager.Controllers {
         /// <summary>
         /// Return all assets for a given Project 
         /// you may paginate by supplying optional parameters pos and count
-        /// specify format by appending .json or .xml to url
+        /// specify format by appending /json or /xml to url
         /// response ordered by last modified 
         /// </summary>
         /// <param name="project">the project</param>
@@ -196,7 +196,7 @@ namespace OVE.Service.AssetManager.Controllers {
         /// <param name="count">number to return</param>
         /// <returns>a list of Assets</returns>
         [HttpGet]
-        [Route("/OVEAssetModelController/ListAssets/{project}/{pos?}{count?}{.format?}")]
+        [Route("/OVEAssetModelController/ListAssets/{project}/{pos}/{count}.{format?}")]
         public async Task<ActionResult<List<OVEAssetModel>>> ListAssets(string project, int pos = 0, int count = 100) {
             var res = await _context.AssetModels.Where(a => a.Project ==project).OrderByDescending(a=> a.LastModified).Skip(pos).Take(count).ToListAsync();
             return this.FormatOrView(res);
@@ -215,7 +215,7 @@ namespace OVE.Service.AssetManager.Controllers {
         /// <param name="count">number to return</param>
         /// <returns>a list of Assets</returns>
         [HttpGet]
-        [Route("/OVEAssetModelController/ListAssets/Project/Name/{pos?}{count?}{.format?}")]
+        [Route("/OVEAssetModelController/ListAssets/Project/Name/{pos}/{count}.{format?}")]
         public async Task<ActionResult<List<OVEAssetModel>>> ListAssets(string project,string name, int pos = 0, int count = 100) {
             var res = await _context.AssetModels.Where(a => a.Project ==project && a.Name == name).OrderByDescending(a=> a.LastModified).Skip(pos).Take(count).ToListAsync();
             return this.FormatOrView(res);
@@ -325,9 +325,9 @@ namespace OVE.Service.AssetManager.Controllers {
         }
 
         /// <summary>
-        /// Post a new image file
-        /// POST: assetModels/Create
-        /// </summary>
+        /// Post a new asset
+        /// Simplest Post is form-data with upload (file) with Project,Name and Service
+        ///  </summary>
         /// <param name="oveAssetModel">Image model (Project, Name, Description)</param>
         /// <param name="upload">the image file to upload</param>
         /// <returns></returns>

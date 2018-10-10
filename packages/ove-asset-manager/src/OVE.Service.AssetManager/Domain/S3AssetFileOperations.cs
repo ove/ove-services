@@ -21,7 +21,6 @@ namespace OVE.Service.AssetManager.Domain {
         private const string S3ClientAccessKey = "s3Client:AccessKey";
         private const string S3ClientSecret = "s3Client:Secret";
         private const string S3ClientServiceUrl = "s3Client:ServiceURL";
-        private const string S3ClientDownloadUrl = "s3Client:DownloadURL";
         
         public S3AssetFileOperations(ILogger<S3AssetFileOperations> logger, IConfiguration configuration) {
             _logger = logger;
@@ -46,7 +45,8 @@ namespace OVE.Service.AssetManager.Domain {
         #region Implementation of IFileOperations
 
         public string ResolveFileUrl(OVEAssetModel asset) {
-            var url = _configuration.GetValue<string>(S3ClientDownloadUrl)+ asset.StorageLocation;
+            var url = _configuration.GetValue<string>(S3ClientServiceUrl)
+                      + asset.Project + "/" + asset.StorageLocation;
             return url;
         }
 

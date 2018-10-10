@@ -1,17 +1,14 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+
 // ReSharper disable MemberCanBePrivate.Global << needed by EntityFramework
 // ReSharper disable UnusedMember.Global
 
 namespace OVE.Service.AssetManager.Models {
     /// <summary>
-    /// Image file model to represent the meta regarding uploaded images to the object store
+    /// Asset file model to represent OVE assets 
     /// </summary>
     [Table("OVEAssetModels")]
     public class OVEAssetModel {
@@ -70,25 +67,6 @@ namespace OVE.Service.AssetManager.Models {
         /// Provides additional storage for meta data for this asset 
         /// </summary>
         public string AssetMeta { get; set; }
-
-        /// <summary>
-        /// Return the system path to where the asset is actually stored
-        /// </summary>
-        /// <param name="configuration"></param>
-        /// <param name="logger"></param>
-        /// <returns>returns base path on local file system</returns>
-        //todo this code should move
-        public static string GetAssetsBasePath(IConfiguration configuration, ILogger logger) {
-            var rootDirectory = configuration.GetValue<string>(WebHostDefaults.ContentRootKey);
-            var filepath = Path.Combine(rootDirectory,
-                configuration.GetValue<string>("AssetManagerConfig:BasePath"));
-            if (!Directory.Exists(filepath)) {
-                logger.LogInformation("Creating directory for images " + filepath);
-                Directory.CreateDirectory(filepath);
-            }
-
-            return filepath;
-        }
 
         public override string ToString() {
             return$"{nameof(Id)}: {Id}, {nameof(Project)}: {Project}, {nameof(Name)}: {Name}," +
