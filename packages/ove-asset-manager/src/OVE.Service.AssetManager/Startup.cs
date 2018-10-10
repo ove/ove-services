@@ -28,9 +28,9 @@ namespace OVE.Service.AssetManager
 
         internal static void GetVersionNumber() {
             // read version from package.json
-            var packagejson = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"package.json");
-            if (File.Exists(packagejson)) {
-                var package = JObject.Parse(File.ReadAllText(packagejson));
+            var packageJson = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"package.json");
+            if (File.Exists(packageJson)) {
+                var package = JObject.Parse(File.ReadAllText(packageJson));
                 _version = package["version"].ToString();
             }
         }

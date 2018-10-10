@@ -8,6 +8,8 @@ namespace OVE.Service.AssetManager.DbContexts {
     public class AssetModelContext : DbContext {
 
         // enable configuration
+
+        // ReSharper disable once MemberCanBePrivate.Global << due to DI
         public AssetModelContext(DbContextOptions<AssetModelContext> options) : base(options) {
         }
 

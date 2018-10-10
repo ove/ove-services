@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OVE.Service.AssetManager.DbContexts;
 using OVE.Service.AssetManager.Domain;
@@ -29,7 +28,6 @@ namespace OVE.Service.AssetManager.Controllers {
         /// </summary>
         /// <param name="context">Database Context</param>
         /// <param name="logger">logger</param>
-        /// <param name="configuration">config from appsettings.json</param>
         /// <param name="fileOperations">something that understands what to do with files</param>
         /// <param name="serviceRepository">service repository</param>
         public OVEAssetModelController(AssetModelContext context, ILogger<OVEAssetModelController> logger,
@@ -410,15 +408,15 @@ namespace OVE.Service.AssetManager.Controllers {
                 return NotFound();
             }
 
-            var oldassetModel = await _context.AssetModels.FirstOrDefaultAsync(m => m.Id == id);
-            if (oldassetModel == null) {
+            var oldAssetModel = await _context.AssetModels.FirstOrDefaultAsync(m => m.Id == id);
+            if (oldAssetModel == null) {
                 return NotFound();
             }
 
             // concurrent fields need to be updated by themselves and atomically. 
-            bool need2UpdateProcessingState = oldassetModel.ProcessingState != oveAssetModel.ProcessingState;
+            bool need2UpdateProcessingState = oldAssetModel.ProcessingState != oveAssetModel.ProcessingState;
             if (need2UpdateProcessingState) { 
-                oveAssetModel.ProcessingState = oldassetModel.ProcessingState;
+                oveAssetModel.ProcessingState = oldAssetModel.ProcessingState;
             }
 
             if (!_serviceRepository.ValidateServiceChoice(oveAssetModel.Service, upload)) {
@@ -427,11 +425,11 @@ namespace OVE.Service.AssetManager.Controllers {
             
             if (ModelState.IsValid) {
                 try {
-                    if (oldassetModel.Project != oveAssetModel.Project) {
-                       await _fileOperations.MoveFile(oldassetModel, oveAssetModel); // todo not implemented
+                    if (oldAssetModel.Project != oveAssetModel.Project) {
+                       await _fileOperations.MoveFile(oldAssetModel, oveAssetModel); // todo not implemented
                     }
                     //stop EF from tracking the old version so that it will allow you to update the new version
-                    _context.Entry(oldassetModel).State = EntityState.Detached;
+                    _context.Entry(oldAssetModel).State = EntityState.Detached;
                     
                     if (upload != null && upload.Length > 0) {
                         if (!await _fileOperations.DeleteFile(oveAssetModel)) {
@@ -456,7 +454,7 @@ namespace OVE.Service.AssetManager.Controllers {
 
                 }
                 catch (DbUpdateConcurrencyException) {
-                    if (!assetModelExists(oveAssetModel.Id)) {
+                    if (!_context.AssetModels.Any(e => e.Id == oveAssetModel.Id)) {
                         return NotFound();
                     }
 
@@ -513,10 +511,6 @@ namespace OVE.Service.AssetManager.Controllers {
             await _context.SaveChangesAsync();
 
             return string.IsNullOrWhiteSpace(format) ? RedirectToAction(nameof(Index)) : this.FormatOrView(true);
-        }
-
-        private bool assetModelExists(string id) {
-            return _context.AssetModels.Any(e => e.Id == id);
         }
     }
 }

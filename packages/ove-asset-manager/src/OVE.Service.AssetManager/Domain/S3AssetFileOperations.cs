@@ -50,10 +50,12 @@ namespace OVE.Service.AssetManager.Domain {
             return url;
         }
 
+#pragma warning disable 1998
         public async Task<bool> MoveFile(OVEAssetModel oldAsset, OVEAssetModel newAsset) {
+#pragma warning restore 1998
             //todo this is hard because we might have to move between s3 buckets and that is complex
             // https://stackoverflow.com/questions/9664904/best-way-to-move-files-between-s3-buckets
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public async Task<bool> DeleteFile(OVEAssetModel asset) {

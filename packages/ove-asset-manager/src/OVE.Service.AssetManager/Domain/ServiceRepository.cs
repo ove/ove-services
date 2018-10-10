@@ -29,6 +29,7 @@ namespace OVE.Service.AssetManager.Domain {
             }
         }
 
+        // ReSharper disable once UnusedMember.Global << used in view
         public List<SelectListItem> GetServices() {
             return _knownServices.Select(s => new SelectListItem(s.Key, s.Key)).Reverse().ToList();      
         }

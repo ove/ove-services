@@ -7,10 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OVE.Service.AssetManager.DbContexts;
 
-namespace OVE.Service.AssetManager
-{
-    public class Program
-    {
+namespace OVE.Service.AssetManager {
+    // ReSharper disable once ClassNeverInstantiated.Global
+    public class Program {
         public static void Main(string[] args) {
             Startup.GetVersionNumber();
             var host = CreateWebHostBuilder(args).Build();
@@ -19,12 +18,12 @@ namespace OVE.Service.AssetManager
             host.Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) {
+        private static IWebHostBuilder CreateWebHostBuilder(string[] args) {
             var configBasePath = Directory.GetCurrentDirectory();
 
             if (!File.Exists(Path.Combine(configBasePath, "appsettings.json"))) {
                 configBasePath = AppDomain.CurrentDomain.BaseDirectory;
-                Console.WriteLine("Changing ContentRoot to "+configBasePath);
+                Console.WriteLine("Changing ContentRoot to " + configBasePath);
             }
 
             return WebHost.CreateDefaultBuilder(args)

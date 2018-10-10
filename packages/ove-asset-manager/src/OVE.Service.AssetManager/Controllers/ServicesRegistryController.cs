@@ -26,8 +26,8 @@ namespace OVE.Service.AssetManager.Controllers
         [HttpPost]
         [Route("/api/ServicesRegistry/Register")]
         public ActionResult RegisterService(OVEService service) {
+            _logger.LogInformation("Received request to register service "+service.Name);
             _serviceRepository.UpdateService(service);
-
             return Ok();
         }
     }

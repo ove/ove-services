@@ -6,6 +6,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+// ReSharper disable MemberCanBePrivate.Global << needed by EntityFramework
+// ReSharper disable UnusedMember.Global
 
 namespace OVE.Service.AssetManager.Models {
     /// <summary>
@@ -62,7 +64,7 @@ namespace OVE.Service.AssetManager.Models {
 
         [ConcurrencyCheck]
         [ScaffoldColumn(false)]
-        public int ProcessingState { get; set; } = 0;
+        public int ProcessingState { get; set; }
 
         /// <summary>
         /// Provides additional storage for meta data for this asset 
