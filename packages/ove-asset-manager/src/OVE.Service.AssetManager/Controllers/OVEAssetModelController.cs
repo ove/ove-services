@@ -76,6 +76,46 @@ namespace OVE.Service.AssetManager.Controllers {
             }
         }
 
+        /// <summary>
+        /// Atomically update the processing state
+        /// Atomic update collisions will issue a 409 No Conflict, you should retry your request.
+        /// spec if you want json or xml by appending .json or .xml
+        /// </summary>
+        /// <param name="id">id of asset</param>
+        /// <param name="state">numeric state</param>
+        /// <param name="message">messages e.g. errors</param>
+        /// <returns>Asset or 204 NoContent or 409 Conflict</returns>
+        [HttpPost]
+        [Route("/OVEAssetModelController/SetProcessingState/{id}{state}.{format?}")]
+        public async Task<ActionResult<OVEAssetModel>> SetProcessingState(string id, int state, string message) {
+            if (id == null) {
+                return NotFound();
+            }
+
+            var assetModel = await _context.AssetModels.FindAsync(id);
+            if (assetModel == null) {
+                return NotFound();
+            }
+
+            try {
+                assetModel.ProcessingState = state;
+                assetModel.ProcessingErrors = message;
+                _context.Update(assetModel);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException e) {
+                // do nothing this is intended to stop multiple 
+                _logger.LogDebug("stopped double processing" + e);
+                return Conflict("please try again");
+            }
+            catch (Exception e) {
+                _logger.LogError(e, "Exception obtaining work items");
+                return Conflict("please try again");
+            }
+
+            return this.FormatOrView(assetModel);
+        }
+
         #endregion
 
         #region Meta Data APIs
