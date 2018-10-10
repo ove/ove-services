@@ -21,7 +21,6 @@ namespace OVE.Service.AssetManager.Controllers {
     public class OVEAssetModelController : Controller {
         private readonly AssetModelContext _context;
         private readonly ILogger<OVEAssetModelController> _logger;
-        private readonly IConfiguration _configuration;
         private readonly IAssetFileOperations _fileOperations;
         private readonly ServiceRepository _serviceRepository;
 
@@ -34,14 +33,12 @@ namespace OVE.Service.AssetManager.Controllers {
         /// <param name="fileOperations">something that understands what to do with files</param>
         /// <param name="serviceRepository">service repository</param>
         public OVEAssetModelController(AssetModelContext context, ILogger<OVEAssetModelController> logger,
-            IConfiguration configuration, IAssetFileOperations fileOperations,ServiceRepository serviceRepository) {
+            IAssetFileOperations fileOperations,ServiceRepository serviceRepository) {
             _context = context;
             _logger = logger;
-            _configuration = configuration;
             _fileOperations = fileOperations;
             _serviceRepository = serviceRepository;
-            _logger.LogInformation("started ImageFilModels Controller with the following path " +
-                                   _configuration.GetValue<string>("AssetManagerConfig:BasePath"));
+            _logger.LogInformation("started Asset Controller Started");
         }
 
         #region Asset Processing API's
@@ -77,6 +74,57 @@ namespace OVE.Service.AssetManager.Controllers {
                 _logger.LogError(e, "Exception obtaining work items");
                 return Conflict("please try again");
             }
+        }
+
+        #endregion
+
+        #region Meta Data APIs
+
+        /// <summary>
+        /// Return the Asset Meta data in specified format
+        /// </summary>
+        /// <param name="id">id of asset</param>
+        /// <returns>the asset meta data</returns>
+        [HttpGet]
+        [Route("/OVEAssetModelController/AssetMeta/{id}.{format?}")]
+        public async Task<ActionResult<string>> GetAssetMeta(string id) {
+            if (id == null) {
+                return NotFound();
+            }
+
+            var assetModel = await _context.AssetModels.FindAsync(id);
+            if (assetModel == null) {
+                return NotFound();
+            }
+
+            return this.FormatOrView(assetModel.AssetMeta);
+        }
+
+        /// <summary>
+        /// A simple method to update the metadata of an asset 
+        /// </summary>
+        /// <param name="id">id of the asset</param>
+        /// <param name="meta">some meta data</param>
+        /// <returns>the ove Asset which has been updated</returns>
+        [HttpPost]
+        [Route("/OVEAssetModelController/AssetMeta/{id}.{format?}")]
+        public async Task<ActionResult<OVEAssetModel>> UpdateAssetMeta(string id,[FromBody] string meta) {
+            if (id == null) {
+                return NotFound();
+            }
+
+            var assetModel = await _context.AssetModels.FindAsync(id);
+            if (assetModel == null) {
+                return NotFound();
+            }
+
+            assetModel.AssetMeta = meta;
+
+            _context.Update(assetModel);
+
+            await _context.SaveChangesAsync();
+
+            return this.FormatOrView(assetModel);
         }
 
         #endregion
@@ -149,13 +197,13 @@ namespace OVE.Service.AssetManager.Controllers {
         [HttpGet]
         [Route("/OVEAssetModelController/GetId/.{format?}")]
         public  async Task<ActionResult<string>> GetId(string project, string name) {
-            var imageFileModel = await _context.AssetModels.Where(m => m.Project == project && m.Name == name)
+            var assetModel = await _context.AssetModels.Where(m => m.Project == project && m.Name == name)
                                                      .OrderByDescending(m=> m.LastModified).FirstOrDefaultAsync();
 
-            if (imageFileModel == null) {
+            if (assetModel == null) {
                 return NotFound();
             }
-            return this.FormatOrView(imageFileModel.Id);
+            return this.FormatOrView(assetModel.Id);
         }
 
         /// <summary>
@@ -207,7 +255,7 @@ namespace OVE.Service.AssetManager.Controllers {
 
         /// <summary>
         /// Get Details of the image by guid 
-        /// ImageFileModels/Details/5
+        /// assetModels/Details/5
         /// </summary>
         /// <param name="id">guid of the image </param>
         /// <returns>details of the image</returns>
@@ -218,18 +266,18 @@ namespace OVE.Service.AssetManager.Controllers {
                 return NotFound();
             }
 
-            var imageFileModel = await _context.AssetModels
+            var assetModel = await _context.AssetModels
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (imageFileModel == null) {
+            if (assetModel == null) {
                 return NotFound();
             }
 
-            return this.FormatOrView(imageFileModel);
+            return this.FormatOrView(assetModel);
         }
 
         /// <summary>
         /// Returns the create page
-        /// GET: ImageFileModels/Create
+        /// GET: assetModels/Create
         /// </summary>
         /// <returns>creation gui page</returns>
         [HttpGet]
@@ -240,7 +288,7 @@ namespace OVE.Service.AssetManager.Controllers {
 
         /// <summary>
         /// Post a new image file
-        /// POST: ImageFileModels/Create
+        /// POST: assetModels/Create
         /// </summary>
         /// <param name="oveAssetModel">Image model (Project, Name, Description)</param>
         /// <param name="upload">the image file to upload</param>
@@ -285,7 +333,7 @@ namespace OVE.Service.AssetManager.Controllers {
         
         /// <summary>
         /// Return an edit view for a given ImageModel by Guid
-        /// GET: ImageFileModels/Edit/5
+        /// GET: assetModels/Edit/5
         /// </summary>
         /// <param name="id">guid for the image</param>
         /// <returns></returns>
@@ -296,18 +344,18 @@ namespace OVE.Service.AssetManager.Controllers {
                 return NotFound();
             }
 
-            var imageFileModel = await _context.AssetModels.FindAsync(id);
-            if (imageFileModel == null) {
+            var assetModel = await _context.AssetModels.FindAsync(id);
+            if (assetModel == null) {
                 return NotFound();
             }
 
-            return this.FormatOrView(imageFileModel);
+            return this.FormatOrView(assetModel);
         }
 
         /// <summary>
         /// Post an edit to an image model by its guid.
         /// Changing the file is optional, if triggered it will result in reprocessing.
-        /// POST: ImageFileModels/Edit/5
+        /// POST: assetModels/Edit/5
         /// </summary>
         /// <param name="id">guid for the image</param>
         /// <param name="oveAssetModel">The Image Model</param>
@@ -322,15 +370,15 @@ namespace OVE.Service.AssetManager.Controllers {
                 return NotFound();
             }
 
-            var oldImageFileModel = await _context.AssetModels.FirstOrDefaultAsync(m => m.Id == id);
-            if (oldImageFileModel == null) {
+            var oldassetModel = await _context.AssetModels.FirstOrDefaultAsync(m => m.Id == id);
+            if (oldassetModel == null) {
                 return NotFound();
             }
 
             // concurrent fields need to be updated by themselves and atomically. 
-            bool need2UpdateProcessingState = oldImageFileModel.ProcessingState != oveAssetModel.ProcessingState;
+            bool need2UpdateProcessingState = oldassetModel.ProcessingState != oveAssetModel.ProcessingState;
             if (need2UpdateProcessingState) { 
-                oveAssetModel.ProcessingState = oldImageFileModel.ProcessingState;
+                oveAssetModel.ProcessingState = oldassetModel.ProcessingState;
             }
 
             if (!_serviceRepository.ValidateServiceChoice(oveAssetModel.Service, upload)) {
@@ -339,11 +387,11 @@ namespace OVE.Service.AssetManager.Controllers {
             
             if (ModelState.IsValid) {
                 try {
-                    if (oldImageFileModel.Project != oveAssetModel.Project) {
-                       await _fileOperations.MoveFile(oldImageFileModel, oveAssetModel); // todo not implemented
+                    if (oldassetModel.Project != oveAssetModel.Project) {
+                       await _fileOperations.MoveFile(oldassetModel, oveAssetModel); // todo not implemented
                     }
                     //stop EF from tracking the old version so that it will allow you to update the new version
-                    _context.Entry(oldImageFileModel).State = EntityState.Detached;
+                    _context.Entry(oldassetModel).State = EntityState.Detached;
                     
                     if (upload != null && upload.Length > 0) {
                         if (!await _fileOperations.DeleteFile(oveAssetModel)) {
@@ -368,7 +416,7 @@ namespace OVE.Service.AssetManager.Controllers {
 
                 }
                 catch (DbUpdateConcurrencyException) {
-                    if (!ImageFileModelExists(oveAssetModel.Id)) {
+                    if (!assetModelExists(oveAssetModel.Id)) {
                         return NotFound();
                     }
 
@@ -383,7 +431,7 @@ namespace OVE.Service.AssetManager.Controllers {
 
         /// <summary>
         /// Return a view for confirming you want to remove an image
-        /// GET: ImageFileModels/RemovableView/5
+        /// GET: assetModels/RemovableView/5
         /// </summary>
         /// <param name="id">guid of the image model</param>
         /// <returns>confirm of removal webpage</returns>
@@ -394,18 +442,18 @@ namespace OVE.Service.AssetManager.Controllers {
                 return NotFound();
             }
 
-            var imageFileModel = await _context.AssetModels
+            var assetModel = await _context.AssetModels
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (imageFileModel == null) {
+            if (assetModel == null) {
                 return NotFound();
             }
 
-            return this.FormatOrView(imageFileModel);
+            return this.FormatOrView(assetModel);
         }
 
         /// <summary>
         /// Post to remove an image from the database.
-        /// POST: ImageFileModels/Remove/5
+        /// POST: assetModels/Remove/5
         /// </summary>
         /// <param name="id">guid of the image model</param>
         /// <param name="format">optional format of response (xml or json)</param>
@@ -413,21 +461,21 @@ namespace OVE.Service.AssetManager.Controllers {
         [HttpPost]
         [Route("/OVEAssetModelController/Remove/{id}.{format?}")]
         public async Task<ActionResult<bool>> Remove(string id,string format = null) {
-            var imageFileModel = await _context.AssetModels.FindAsync(id);
+            var assetModel = await _context.AssetModels.FindAsync(id);
 
             // delete files
-            if (!await _fileOperations.DeleteFile(imageFileModel)) {
+            if (!await _fileOperations.DeleteFile(assetModel)) {
                 return UnprocessableEntity("failed to delete s3 files");
             }
             
             // delete in db
-            _context.AssetModels.Remove(imageFileModel);
+            _context.AssetModels.Remove(assetModel);
             await _context.SaveChangesAsync();
 
             return string.IsNullOrWhiteSpace(format) ? RedirectToAction(nameof(Index)) : this.FormatOrView(true);
         }
 
-        private bool ImageFileModelExists(string id) {
+        private bool assetModelExists(string id) {
             return _context.AssetModels.Any(e => e.Id == id);
         }
     }
