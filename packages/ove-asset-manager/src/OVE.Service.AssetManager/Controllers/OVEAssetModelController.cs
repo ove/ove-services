@@ -4,10 +4,8 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OVE.Service.AssetManager.DbContexts;
 using OVE.Service.AssetManager.Domain;
@@ -32,7 +30,8 @@ namespace OVE.Service.AssetManager.Controllers {
         /// <param name="context">Database Context</param>
         /// <param name="logger">logger</param>
         /// <param name="configuration">config from appsettings.json</param>
-        /// <param name="fileOperations"></param>
+        /// <param name="fileOperations">something that understands what to do with files</param>
+        /// <param name="serviceRepository">service repository</param>
         public OVEAssetModelController(AssetModelContext context, ILogger<OVEAssetModelController> logger,
             IConfiguration configuration, IAssetFileOperations fileOperations,ServiceRepository serviceRepository) {
             _context = context;
@@ -42,19 +41,6 @@ namespace OVE.Service.AssetManager.Controllers {
             _serviceRepository = serviceRepository;
             _logger.LogInformation("started ImageFilModels Controller with the following path " +
                                    _configuration.GetValue<string>("AssetManagerConfig:BasePath"));
-        }
-
-        /// <summary>
-        /// Enable a method to return either an Action View or a .json or .xml file as requested
-        /// By default html is returned. 
-        /// </summary>
-        /// <typeparam name="T">type of result</typeparam>
-        /// <param name="model">the result</param>
-        /// <returns>either a view of the model or the model as xml or json as per request</returns>
-        private ActionResult<T> FormatOrView<T>(T model) {
-            return HttpContext.RequestServices.GetRequiredService<FormatFilter>()?.GetFormat(ControllerContext) == null 
-                ? View(model) 
-                : new ActionResult<T>(model);
         }
 
         #region Convenience API's 
@@ -144,7 +130,7 @@ namespace OVE.Service.AssetManager.Controllers {
                 return NotFound();
             }
 
-            return FormatOrView(imageFileModel);
+            return this.FormatOrView(imageFileModel);
         }
 
         /// <summary>
@@ -200,7 +186,7 @@ namespace OVE.Service.AssetManager.Controllers {
                 return RedirectToAction(nameof(Index));
             }
 
-            return FormatOrView(oveAssetModel);
+            return this.FormatOrView(oveAssetModel);
         }
         
         /// <summary>
@@ -221,7 +207,7 @@ namespace OVE.Service.AssetManager.Controllers {
                 return NotFound();
             }
 
-            return FormatOrView(imageFileModel);
+            return this.FormatOrView(imageFileModel);
         }
 
         /// <summary>
@@ -298,7 +284,7 @@ namespace OVE.Service.AssetManager.Controllers {
                 return RedirectToAction(nameof(Index));
             }
 
-            return FormatOrView(oveAssetModel);
+            return this.FormatOrView(oveAssetModel);
         }
 
         /// <summary>
@@ -320,7 +306,7 @@ namespace OVE.Service.AssetManager.Controllers {
                 return NotFound();
             }
 
-            return FormatOrView(imageFileModel);
+            return this.FormatOrView(imageFileModel);
         }
 
         /// <summary>
@@ -344,7 +330,7 @@ namespace OVE.Service.AssetManager.Controllers {
             _context.AssetModels.Remove(imageFileModel);
             await _context.SaveChangesAsync();
 
-            return string.IsNullOrWhiteSpace(format) ? RedirectToAction(nameof(Index)) : FormatOrView(true);
+            return string.IsNullOrWhiteSpace(format) ? RedirectToAction(nameof(Index)) : this.FormatOrView(true);
         }
 
         private bool ImageFileModelExists(string id) {

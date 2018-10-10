@@ -8,6 +8,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace OVE.Service.AssetManager.Domain {
+    /// <summary>
+    /// A singleton services for managing knowledge of other services.
+    /// filled form appsetting.json and API updates from other services.
+    /// </summary>
     public class ServiceRepository {
         private readonly ILogger<ServiceRepository> _logger;
         
@@ -21,7 +25,7 @@ namespace OVE.Service.AssetManager.Domain {
             
             foreach (var oveService in services) {
                 _logger.LogInformation("found service from Config: "+oveService.Name);
-                _knownServices.AddOrUpdate(oveService.Name,k=> oveService,(k,v)=> oveService);
+                UpdateService(oveService);
             }
         }
 
@@ -34,10 +38,10 @@ namespace OVE.Service.AssetManager.Domain {
             if (!_knownServices.ContainsKey(serviceName)) return false;
             return _knownServices[serviceName].FileTypes.Contains(extension);
         }
-    }
 
-    public class OVEService {
-        public string Name { get; set; }
-        public List<string> FileTypes { get; set; } 
+        public void UpdateService(OVEService service) {
+            _logger.LogInformation("Updated Service "+service.Name);
+            this._knownServices.AddOrUpdate(service.Name, k => service, (k, v) => service);
+        }
     }
 }
