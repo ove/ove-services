@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.Model;
@@ -148,19 +149,15 @@ namespace OVE.Service.AssetManager.Domain {
         private string S3Santize(string input) {
             try {
                 input = input.Substring(0,Math.Min( input.Length, 63 - 5)); // max permitted less file extension 
-                //0-9 A-Z a-z
-                var validChars = Enumerable.Range(48, 10) // 0-9
-                    .Union(Enumerable.Range(65, 26)) // A-Z
-                    .Union(Enumerable.Range(97, 26)) // a-z
-                    .Select(c => (char) c).Union(new List<char> {'_', '-'})
-                    .ToList();
-
-                input = input.Where(validChars.Contains).Aggregate("",(acc,c)=> acc+c);
+                
+                // filter to valid chars 
+                Regex r = new Regex("^[-a-zA-Z0-9_]+$");
+                input = input.Where(l => r.IsMatch(l.ToString())).Aggregate("",(acc,c)=> acc+c);
 
                 // first must be a lower case
-                var lowers = Enumerable.Range(97, 26).Select(c => (char) c).ToList();
-                if (!lowers.Contains(input.First())) {
-                    if (lowers.Contains(input.ToLower().First())) {
+                Regex lowers = new Regex("^[a-z]");
+                if (!lowers.IsMatch(input.First().ToString())) {
+                    if (lowers.IsMatch(input.ToLower().First().ToString())) {
                         var first = input.ToLower()[0];
                         input = first + input.Substring(1, input.Length - 1);
                     }
@@ -171,7 +168,7 @@ namespace OVE.Service.AssetManager.Domain {
             }
             catch (Exception e) {
                 _logger.LogError(e,"failed to sanitize s3 name "+input);
-                throw;
+                return Guid.NewGuid().ToString();
             }
 
             return input;
