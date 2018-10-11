@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace OVE.Service.AssetManager.Domain {
     public static class ControllerExtensions {
@@ -13,10 +11,9 @@ namespace OVE.Service.AssetManager.Domain {
         /// <param name="model">the result</param>
         /// <returns>either a view of the model or the model as xml or json as per request</returns>
         public static ActionResult<T> FormatOrView<T>(this Controller controller, T model) {
-            return controller.HttpContext.RequestServices.GetRequiredService<FormatFilter>()
-                       ?.GetFormat(controller.ControllerContext) == null
-                ? controller.View(model)
-                : new ActionResult<T>(model);
+            var requestContentType = controller.Request.Headers["Accept"].ToString();
+
+            return requestContentType.Contains("html") ? controller.View(model) : new ActionResult<T>(model);
         }
     }
 }
