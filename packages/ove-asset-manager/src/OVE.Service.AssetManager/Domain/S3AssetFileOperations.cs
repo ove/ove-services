@@ -73,7 +73,7 @@ namespace OVE.Service.AssetManager.Domain {
                         }
 
                         // find more files
-                        files = await s3Client.ListObjectsAsync(new ListObjectsRequest() {
+                        files = await s3Client.ListObjectsAsync(new ListObjectsRequest {
                             BucketName = asset.Project,
                             Prefix = asset.GetStorageGuid()
                         });

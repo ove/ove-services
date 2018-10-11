@@ -37,8 +37,7 @@ namespace OVE.Service.AssetManager.Domain {
 
         public bool ValidateServiceChoice(string serviceName, IFormFile upload) {
             var extension = Path.GetExtension(upload.FileName).ToLower();
-            if (!_knownServices.ContainsKey(serviceName)) return false;
-            return _knownServices[serviceName].FileTypes.Contains(extension);
+            return _knownServices.ContainsKey(serviceName) && _knownServices[serviceName].FileTypes.Contains(extension);
         }
 
         public void UpdateService(OVEService service) {
