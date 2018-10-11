@@ -13,6 +13,7 @@ using OVE.Service.AssetManager.Models;
 
 namespace OVE.Service.AssetManager.Controllers {
 
+    /// <inheritdoc />
     /// <summary>
     /// API operations for upload an Image to the TileService
     /// </summary>
