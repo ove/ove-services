@@ -2,9 +2,11 @@ const validate = require("validate.js");
 
 let requestValidators = {
     render: {
-        "root": {presence: true},
-        "root.type": {presence: true, isEqual: "container"},
-        "root.sections": {
+        "ove-space": {presence: true, isString: true},
+        "canvas": {presence: true},
+        "canvas.layout": {presence: true, isNotEmpty: true},
+        "canvas.layout.type": {presence: true, isString: true},
+        "canvas.sections": {
             presence: true,
             isNotEmpty: true,
             sectionValidator: {
@@ -24,24 +26,3 @@ exports.validateRequest = (endpoint = "render", req) => {
         }
     }
 };
-
-/**
-
- “root”: {
-    “type”: “container”,
-    “layout: “grid”,
-     "sections": {
-         "container1": {
-              "type": "container",
-              “layout-params”: { … }
-               “layout”: “percent”,
-               "sections": {
-                     "section1": {
-                            "type": "section",
-                             “layout-params”: { … }
-                            “app”: { … }
-                       }}},
-
-            "container2": { … }
-
- **/

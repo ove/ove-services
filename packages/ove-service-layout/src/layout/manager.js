@@ -9,38 +9,52 @@ class LayoutManager {
         this.layouts[layout.name()] = layout
     }
 
-    getLayout(containerId, container) {
-        if (container.layout) {
-            if (this.layouts[container.layout]) {
-                return this.layouts[container.layout]
+    getLayout(container) {
+        if (container.layout.type) {
+            if (this.layouts[container.layout.type]) {
+                return this.layouts[container.layout.type]
             } else {
-                throw `Invalid layout == '${container.layout}' selected for ${containerId}`
+                throw `Invalid layout == '${container.layout.type}' selected for ${container.name}`
             }
         } else {
-            return this.layouts["static"]
+            throw `Invalid empty layout for ${container.name}`
         }
     }
 
-    renderRoot(rootContainer, oveLayout) {
-        return this.renderContainer("root", {
-            ...rootContainer,
-            x: oveLayout.x,
-            y: oveLayout.y,
-            w: oveLayout.w,
-            h: oveLayout.h
+    renderCanvas(canvas, oveLayout) {
+        let result = this.renderContainer({
+            ...canvas,
+            type: "container",
+            name: "canvas",
+            geometry: {
+                x: oveLayout.x,
+                y: oveLayout.y,
+                w: oveLayout.w,
+                h: oveLayout.h
+            }
         });
+        //delete unused properties
+        delete result["name"];
+        delete result["type"];
+
+        //todo; do some post validation and raise warnings
+
+        return result
     }
 
-    renderContainer(containerId, container) {
-        let layout = this.getLayout(containerId, container);
+    renderContainer(container) {
         if (container.type === "container") {
-            for (let sectionId of Object.keys(container.sections)) {
-                let section = container.sections[sectionId];
+            let layout = this.getLayout(container);
+            logger(`Layout selected ${layout.name()} for ${container.name}`);
+            for (let section of container.sections) {
+                let errors = layout.validate(section, container);
+                if (errors) {
+                    throw errors
+                }
 
-                layout.validate(sectionId, section);
-                layout.render(sectionId, section, container);
+                layout.render(section, container);
 
-                this.renderContainer(sectionId, section);
+                this.renderContainer(section);
             }
         }
         return container;

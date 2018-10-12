@@ -5,33 +5,41 @@ class GridLayout extends Layout {
         return "grid";
     }
 
-    render(sectionId, section, parent) {
-        let params = section['layout-params'];
-        let cols = params.cols;
-        let rows = params.rows;
+    render(section, parent) {
+        let params = section['position-constraints'];
+        let cols = parent.layout.cols;
+        let rows = parent.layout.rows;
 
-        let cellWidth = parent.w / cols;
-        let cellHeight = parent.h / rows;
+        let cellWidth = parent.geometry.w / cols;
+        let cellHeight = parent.geometry.h / rows;
 
-        section.x = Math.round(params.c * cellWidth);
+        section.geometry = {
+            x: Math.round(params.c * cellWidth),
+            y: Math.round(params.r * cellHeight)
+        };
+
         shiftCoordinates(parent, section, "x");
-
-        section.y = Math.round(params.r * cellHeight);
         shiftCoordinates(parent, section, "y");
 
-        section.w = Math.round(params.w * cellWidth);
-        section.h = Math.round(params.h * cellHeight);
+        section.geometry.w = Math.round(params.w * cellWidth);
+        section.geometry.h = Math.round(params.h * cellHeight);
     }
 
     validators() {
         return {
             ...super.validators(),
-            "#.layout-params.r": {presence: true, isNumber: true},
-            "#.layout-params.c": {presence: true, isNumber: true},
-            "#.layout-params.w": {presence: true, isNumber: true},
-            "#.layout-params.h": {presence: true, isNumber: true},
-            "#.layout-params.cols": {presence: true, isNumber: true},
-            "#.layout-params.rows": {presence: true, isNumber: true},
+            "#.position-constraints.r": {presence: true, isNumber: true},
+            "#.position-constraints.c": {presence: true, isNumber: true},
+            "#.position-constraints.w": {presence: true, isNumber: true},
+            "#.position-constraints.h": {presence: true, isNumber: true},
+        }
+    }
+
+    parentValidators() {
+        return {
+            ...super.parentValidators(),
+            "#.layout.rows": {presence: true, isNumber: true},
+            "#.layout.cols": {presence: true, isNumber: true},
         }
     }
 }

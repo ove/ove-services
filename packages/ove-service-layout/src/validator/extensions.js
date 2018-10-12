@@ -6,6 +6,7 @@ validate.validators.isNotEqual = (value, options) => options === value ? null : 
 validate.validators.isNotEmpty = (value) => validate.isEmpty(value) ? `can't be empty` : null;
 validate.validators.isNumber = (value) => validate.isNumber(value) ? null : `should be a number`;
 validate.validators.isPercent = (value) => validate.isNumber(value) && value >= 0 && value <= 1 ? null : `should be between [0, 1]`;
+validate.validators.isString = (value) => validate.isString(value) ? null : `should be a valid string`;
 
 validate.validators.oneOf = (value, options) => {
     let error;
@@ -30,25 +31,46 @@ const translateValidator = (options, containers) => {
 };
 
 const sectionValidator = (sections, options) => {
+    let errors = [];
     if (sections) {
-        let errors = validate(sections, translateValidator(options, Object.keys(sections)));
-        if (errors) {
-            return errors
-        }
+        for (let section of sections) {
+            if (!validate.isEmpty(section.name) && validate.isString(section.name)) {
+                let vErrors = validate({[section.name]: section}, translateValidator(options, [section.name]));
+                if (vErrors) {
+                    errors = [...errors, vErrors];
+                }
 
-        for (let container of Object.values(sections)) {
-            if (container.type === "container" && !validate.isEmpty(container.sections)) {
-                return sectionValidator(container.sections, options);
+                if (section.type === "container" && !validate.isEmpty(section.sections)) {
+                    vErrors = sectionValidator(section.sections, options);
+                    if (vErrors) {
+                        errors = [...errors, ...vErrors];
+                    }
+                }
+            } else {
+                errors.push("One of the sections has an empty or non-string name")
             }
         }
     }
+    return errors.length > 0 ? errors : null;
 };
 
 validate.validators.sectionValidator = sectionValidator;
 
 validate.validators.containerValidator = (container) => {
-    if (container.type === "container" && validate.isEmpty(container.sections)) {
-        return "Sections can't be empty for type === 'container'"
+    if (container.type === "container") {
+        let errors = [];
+
+        if (validate.isEmpty(container.sections)) {
+            errors.push("sections can't be empty for type === 'container'")
+        }
+
+        if (validate.isEmpty(container.layout)) {
+            errors.push("layout can't be empty for type === 'container'")
+        } else if (validate.isEmpty(container.layout.type) || !validate.isString(container.layout.type)) {
+            errors.push("layout type needs to be a valid non-empty string for type === 'container'")
+        }
+
+        return errors.length > 0 ? errors : null
     }
 };
 

@@ -5,26 +5,28 @@ class PercentLayout extends Layout {
         return "percent";
     }
 
-    render(sectionId, section, parent) {
-        let params = section['layout-params'];
+    render(section, parent) {
+        let params = section['position-constraints'];
 
-        section.x = Math.round(params.x * parent.w);
+        section.geometry = {
+            x: Math.round(params.x * parent.geometry.w),
+            y: Math.round(params.y * parent.geometry.h)
+        };
+
         shiftCoordinates(parent, section, "x");
-
-        section.y = Math.round(params.y * parent.h);
         shiftCoordinates(parent, section, "y");
 
-        section.w = Math.round(params.w * parent.w);
-        section.h = Math.round(params.h * parent.h);
+        section.geometry.w = Math.round(params.w * parent.geometry.w);
+        section.geometry.h = Math.round(params.h * parent.geometry.h);
     }
 
     validators() {
         return {
             ...super.validators(),
-            "#.layout-params.x": {presence: true, isPercent: true},
-            "#.layout-params.y": {presence: true, isPercent: true},
-            "#.layout-params.w": {presence: true, isPercent: true},
-            "#.layout-params.h": {presence: true, isPercent: true},
+            "#.position-constraints.x": {presence: true, isPercent: true},
+            "#.position-constraints.y": {presence: true, isPercent: true},
+            "#.position-constraints.w": {presence: true, isPercent: true},
+            "#.position-constraints.h": {presence: true, isPercent: true},
         }
     }
 }
