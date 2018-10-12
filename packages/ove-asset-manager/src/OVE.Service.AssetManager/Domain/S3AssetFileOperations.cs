@@ -101,7 +101,8 @@ namespace OVE.Service.AssetManager.Domain {
             _logger.LogInformation("about to upload "+asset);
 
             // set up the filename            
-            asset.StorageLocation = Guid.NewGuid() +"/"+S3Santize(Path.GetFileNameWithoutExtension(upload.FileName))+Path.GetExtension(upload.FileName).Substring(0,4).ToLower();
+            var ext = Path.GetExtension(upload.FileName).ToLower();
+            asset.StorageLocation = Guid.NewGuid() +"/"+S3Sanitize(Path.GetFileNameWithoutExtension(upload.FileName),ext)+ext;
 
             try {
 
@@ -146,25 +147,20 @@ namespace OVE.Service.AssetManager.Domain {
 
         }
 
-        private string S3Santize(string input) {
+        /// <summary>
+        /// Sanitize the filename for s3
+        /// https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        private string S3Sanitize(string input,string extension) {
             try {
-                input = input.Substring(0,Math.Min( input.Length, 63 - 5)); // max permitted less file extension 
+                input = input.Substring(0,Math.Min( input.Length, 63 - extension.Length)); // max permitted less file extension 
                 
                 // filter to valid chars 
                 Regex r = new Regex("^[-a-zA-Z0-9_]+$");
                 input = input.Where(l => r.IsMatch(l.ToString())).Aggregate("",(acc,c)=> acc+c);
 
-                // first must be a lower case
-                Regex lowers = new Regex("^[a-z]");
-                if (!lowers.IsMatch(input.First().ToString())) {
-                    if (lowers.IsMatch(input.ToLower().First().ToString())) {
-                        var first = input.ToLower()[0];
-                        input = first + input.Substring(1, input.Length - 1);
-                    }
-                    else {
-                        input = "a" + input.Substring(0, input.Length - 1);
-                    }
-                }
             }
             catch (Exception e) {
                 _logger.LogError(e,"failed to sanitize s3 name "+input);

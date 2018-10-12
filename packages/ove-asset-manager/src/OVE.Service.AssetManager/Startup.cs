@@ -126,7 +126,7 @@ namespace OVE.Service.AssetManager {
             // turn swagger on
             app.UseSwagger()
                 .UseSwaggerUI(c => {
-                    c.SwaggerEndpoint("/swagger/" + _version + "/swagger.json", "TileService " + _version);
+                    c.SwaggerEndpoint("/swagger/" + _version + "/swagger.json", "Asset Service " + _version);
                 });
         }
     }

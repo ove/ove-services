@@ -60,6 +60,12 @@
         <dd>
             @Html.DisplayFor(model => model.LastModified)
         </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.StorageLocation)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.StorageLocation)
+        </dd>
     </dl>
 </div>
 <div>
@@ -67,5 +73,5 @@
     <a asp-action="Index">Back to List</a>
 </div>
 <div>
-    <iframe src="@{ Services.GetViewURL(Model); }" onload="this.width=screen.width;this.height=1000px;" />
+    <iframe src="@{ Services.GetViewURL(Model); }" onload="this.width=screen.width;this.height=50%;" />
 </div>

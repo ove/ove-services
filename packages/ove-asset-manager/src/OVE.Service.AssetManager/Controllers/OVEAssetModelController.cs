@@ -15,7 +15,7 @@ namespace OVE.Service.AssetManager.Controllers {
 
     /// <inheritdoc />
     /// <summary>
-    /// API operations for upload an Image to the TileService
+    /// API operations for upload an Asset to the Asset Service
     /// </summary>
     [FormatFilter]
     public class OVEAssetModelController : Controller {
@@ -249,8 +249,8 @@ namespace OVE.Service.AssetManager.Controllers {
         /// Return the partial uri 
         /// </summary>
         /// <param name="project">project name</param>
-        /// <param name="name">image name</param>
-        /// <returns>url of the image</returns>
+        /// <param name="name">Asset name</param>
+        /// <returns>url of the Asset</returns>
         [HttpGet]
         [Route("/OVEAssetModelController/GetAssetURL/")]
         public  async Task<ActionResult<string>> GetAssetUrl(string project, string name) {
@@ -258,10 +258,10 @@ namespace OVE.Service.AssetManager.Controllers {
         }
 
         /// <summary>
-        /// Return the uri of the image
+        /// Return the uri of the asset
         /// </summary>
-        /// <param name="id">id of the image</param>
-        /// <returns>url of the image</returns>
+        /// <param name="id">id of the asset</param>
+        /// <returns>url of the asset</returns>
         [HttpGet]
         [Route("/OVEAssetModelController/GetAssetURLbyId/")]
         public  async Task<ActionResult<string>> GetAssetUrl(string id) {
@@ -293,11 +293,11 @@ namespace OVE.Service.AssetManager.Controllers {
         }
 
         /// <summary>
-        /// Get Details of the image by guid 
+        /// Get Details of the asset by guid 
         /// assetModels/Details/5
         /// </summary>
-        /// <param name="id">guid of the image </param>
-        /// <returns>details of the image</returns>
+        /// <param name="id">guid of the asset </param>
+        /// <returns>details of the asset</returns>
         [HttpGet]
         [Route("/OVEAssetModelController/Details/{id}.{format?}")]
         public async Task<ActionResult<OVEAssetModel>> Details(string id) {
@@ -329,8 +329,8 @@ namespace OVE.Service.AssetManager.Controllers {
         /// Post a new asset
         /// Simplest Post is form-data with upload (file) with Project,Name and Service
         ///  </summary>
-        /// <param name="oveAssetModel">Image model (Project, Name, Description)</param>
-        /// <param name="upload">the image file to upload</param>
+        /// <param name="oveAssetModel">asset model (Project, Name, Description)</param>
+        /// <param name="upload">the asset file to upload</param>
         /// <returns></returns>
         [HttpPost]
         [DisableRequestSizeLimit]
@@ -371,10 +371,10 @@ namespace OVE.Service.AssetManager.Controllers {
         }
         
         /// <summary>
-        /// Return an edit view for a given ImageModel by Guid
+        /// Return an edit view for a given assetModel by Guid
         /// GET: assetModels/Edit/5
         /// </summary>
-        /// <param name="id">guid for the image</param>
+        /// <param name="id">guid for the asset</param>
         /// <returns></returns>
         [HttpGet]
         [Route("/OVEAssetModelController/Edit/{id}.{format?}")]
@@ -392,12 +392,12 @@ namespace OVE.Service.AssetManager.Controllers {
         }
 
         /// <summary>
-        /// Post an edit to an image model by its guid.
+        /// Post an edit to an asset model by its guid.
         /// Changing the file is optional, if triggered it will result in reprocessing.
         /// POST: assetModels/Edit/5
         /// </summary>
-        /// <param name="id">guid for the image</param>
-        /// <param name="oveAssetModel">The Image Model</param>
+        /// <param name="id">guid for the asset</param>
+        /// <param name="oveAssetModel">The asset Model</param>
         /// <param name="upload">optional new file</param>
         /// <returns></returns>
         [HttpPost]
@@ -469,10 +469,10 @@ namespace OVE.Service.AssetManager.Controllers {
         }
 
         /// <summary>
-        /// Return a view for confirming you want to remove an image
+        /// Return a view for confirming you want to remove an asset
         /// GET: assetModels/RemovableView/5
         /// </summary>
-        /// <param name="id">guid of the image model</param>
+        /// <param name="id">guid of the asset model</param>
         /// <returns>confirm of removal webpage</returns>
         [HttpGet]
         [Route("/OVEAssetModelController/RemovableView/{id}.{format?}")]
@@ -491,10 +491,10 @@ namespace OVE.Service.AssetManager.Controllers {
         }
 
         /// <summary>
-        /// Post to remove an image from the database.
+        /// Post to remove an asset from the database.
         /// POST: assetModels/Remove/5
         /// </summary>
-        /// <param name="id">guid of the image model</param>
+        /// <param name="id">guid of the asset model</param>
         /// <param name="format">optional format of response (xml or json)</param>
         /// <returns>true or error message</returns>
         [HttpPost]

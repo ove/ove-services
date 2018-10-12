@@ -64,7 +64,8 @@ namespace OVE.Service.AssetManager.Models {
         public int ProcessingState { get; set; }
 
         /// <summary>
-        /// Provides additional storage for meta data for this asset 
+        /// Provides additional storage for meta data for this asset
+        /// AssetMeta is an optional place to store optional meta data about the asset which can be updated through API by other services. 
         /// </summary>
         public string AssetMeta { get; set; }
 
