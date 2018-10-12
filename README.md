@@ -17,8 +17,6 @@ The build system is based on [Lerna](https://lernajs.io/) using [Babel](http://b
 * [PM2](http://pm2.keymetrics.io/) `npm install -global pm2`
 * [Lerna](https://lernajs.io/)  `npm install -global lerna`
 
-Building ``OVE.Service.ImageTiles`` also requires the [.NET Core command-line tools](https://docs.microsoft.com/en-us/dotnet/core/tools/?tabs=netcore2x) [Download here](https://www.microsoft.com/net/download/dotnet-core/2.0).
-
 ### Build
 
 Setup the lerna environment:
