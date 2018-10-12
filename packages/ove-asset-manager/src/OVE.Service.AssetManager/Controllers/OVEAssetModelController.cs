@@ -343,11 +343,10 @@ namespace OVE.Service.AssetManager.Controllers {
             if (upload == null || upload.Length <= 0) {
                 _logger.LogError("failed to upload a file");
                 ModelState.AddModelError("Filename", "Failed to upload file");
-            }
-
-            if (!_serviceRepository.ValidateServiceChoice(oveAssetModel.Service, upload)) {
+            } else if (!_serviceRepository.ValidateServiceChoice(oveAssetModel.Service, upload)) {
                 ModelState.AddModelError("Service", "Service does not support File Type");
             }
+
             if (ModelState.IsValid) {
                 // then try and save it
                 try {
@@ -414,16 +413,17 @@ namespace OVE.Service.AssetManager.Controllers {
                 return NotFound();
             }
 
+            // check someone is not tampering with the service after upload
+            if (upload == null && !_serviceRepository.ValidateServiceChoice(oveAssetModel.Service, oveAssetModel.StorageLocation)) {
+                ModelState.AddModelError("Service", "Service does not support File Type");
+            }
+
             // concurrent fields need to be updated by themselves and atomically. 
             bool need2UpdateProcessingState = oldAssetModel.ProcessingState != oveAssetModel.ProcessingState;
             if (need2UpdateProcessingState) { 
                 oveAssetModel.ProcessingState = oldAssetModel.ProcessingState;
             }
 
-            if (!_serviceRepository.ValidateServiceChoice(oveAssetModel.Service, upload)) {
-                ModelState.AddModelError("Service", "Service does not support File Type");
-            }
-            
             if (ModelState.IsValid) {
                 try {
                     if (oldAssetModel.Project != oveAssetModel.Project) {
@@ -433,6 +433,10 @@ namespace OVE.Service.AssetManager.Controllers {
                     _context.Entry(oldAssetModel).State = EntityState.Detached;
                     
                     if (upload != null && upload.Length > 0) {
+                        if (!_serviceRepository.ValidateServiceChoice(oveAssetModel.Service, upload)) {
+                            ModelState.AddModelError("Service", "Service does not support File Type");
+                        }
+
                         if (!await _fileOperations.DeleteFile(oveAssetModel)) {
                             return UnprocessableEntity("unable to delete old file");
                         }

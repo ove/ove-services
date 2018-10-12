@@ -6,7 +6,7 @@
       "kill_timeout": 3000,
       "restart_delay": 3000,
       "script": "dotnet",
-      "args": "dist/OVE.Service.ImageTiles.dll --server.urls=http://0.0.0.0:8181",
+      "args": "dist/OVE.Service.AssetManager.dll --server.urls=http://0.0.0.0:8181",
       "env": {
           "PORT": "8181"
       }
