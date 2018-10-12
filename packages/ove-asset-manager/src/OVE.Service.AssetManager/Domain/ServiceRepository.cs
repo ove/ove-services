@@ -23,7 +23,7 @@ namespace OVE.Service.AssetManager.Domain {
 
             List<OVEService> services = new List<OVEService>();
             configuration.Bind("OVEServices",services);
-            
+
             foreach (var oveService in services) {
                 _logger.LogInformation("found service from Config: "+oveService.Name);
                 UpdateService(oveService);
@@ -41,7 +41,7 @@ namespace OVE.Service.AssetManager.Domain {
         }
 
         public bool ValidateServiceChoice(string serviceName, string extension) {
-            return _knownServices.ContainsKey(serviceName) && _knownServices[serviceName].FileTypes.Contains(extension);
+            return _knownServices.ContainsKey(serviceName) && _knownServices[serviceName].FileTypes.Contains(Path.GetExtension(extension));
         }
 
         public void UpdateService(OVEService service) {
@@ -56,8 +56,27 @@ namespace OVE.Service.AssetManager.Domain {
             return res;
         }
 
+        /// <summary>
+        /// Convert a numeric processing state into a user friendly message. 
+        /// </summary>
+        /// <param name="asset">asset</param>
+        /// <returns>user friendly message</returns>
         // ReSharper disable once UnusedMember.Global << used in view
-        public string GetViewURL(OVEAssetModel model) {
+        public string TranslateProcessingState(OVEAssetModel asset) {
+            var service = GetService(asset.Service);
+            if (service == null) {
+                return "Unknown Service";
+
+            }
+            if (service.ProcessingStates.TryGetValue(asset.ProcessingState.ToString(), out string message)) {
+                return message;
+            }
+
+            return asset.ProcessingState == 0 ? "Unprocessed" : "unknown";
+        }
+
+        // ReSharper disable once UnusedMember.Global << used in view
+        public string GetViewUrl(OVEAssetModel model) {
             var service = GetService(model.Service);
             if (service == null) {
                 return "";

@@ -25,7 +25,7 @@ namespace OVE.Service.AssetManager.Controllers {
         private readonly ServiceRepository _serviceRepository;
 
         /// <summary>
-        /// Create a new API controller for OVE Asset Models
+        /// Create a new API controller for OVE Asset Models using Dependency Injection 
         /// </summary>
         /// <param name="context">Database Context</param>
         /// <param name="logger">logger</param>
@@ -43,12 +43,11 @@ namespace OVE.Service.AssetManager.Controllers {
         #region Asset Processing API's
 
         /// <summary>
-        /// Atomically get the next asset for working on for a given service
+        /// Atomically get the next asset for working on for a given service.
         /// Atomic update collisions will issue a 409 No Conflict, you should retry your request.
-        /// spec if you want json or xml by appending .json or .xml
         /// </summary>
         /// <param name="service">service name</param>
-        /// <returns>Asset or 204 NoContent or 409 Conflict</returns>
+        /// <returns>Asset or 204 NoContent or 409 Conflict (retry)</returns>
         [HttpGet]
         [Route("/OVEAssetModelController/GetWorkItem/{service}.{format?}")]
         public async Task<ActionResult<OVEAssetModel>> GetWorkItem(string service) {
@@ -78,12 +77,11 @@ namespace OVE.Service.AssetManager.Controllers {
         /// <summary>
         /// Atomically update the processing state
         /// Atomic update collisions will issue a 409 No Conflict, you should retry your request.
-        /// spec if you want json or xml by appending .json or .xml
         /// </summary>
         /// <param name="id">id of asset</param>
         /// <param name="state">numeric state</param>
         /// <param name="message">messages e.g. errors</param>
-        /// <returns>Asset or 204 NoContent or 409 Conflict</returns>
+        /// <returns>Asset or 404 NotFound or 409 Conflict</returns>
         [HttpPost]
         [Route("/OVEAssetModelController/SetProcessingState/{id}/{state}/{format?}")]
         public async Task<ActionResult<OVEAssetModel>> SetProcessingState(string id, int state, string message) {
@@ -140,7 +138,7 @@ namespace OVE.Service.AssetManager.Controllers {
         }
 
         /// <summary>
-        /// A simple method to update the metadata of an asset 
+        /// Update the metadata of an asset.
         /// </summary>
         /// <param name="id">id of the asset</param>
         /// <param name="meta">some meta data</param>
@@ -171,9 +169,9 @@ namespace OVE.Service.AssetManager.Controllers {
         #region List API's
 
         /// <summary>
-        /// Return all assets
-        /// you may paginate by supplying optional parameters pos and count
-        /// specify format by appending .json or .xml to url
+        /// Return all assets.
+        /// You may paginate by supplying optional parameters pos and count
+        /// Specify format by appending .json or .xml to url or setting Content Type Header
         /// This api is not ordered by last modified to avoid db overhead. 
         /// </summary>
         /// <param name="pos">pos to start at (zero based)</param>
@@ -188,8 +186,8 @@ namespace OVE.Service.AssetManager.Controllers {
 
         /// <summary>
         /// Return all assets for a given Project 
-        /// you may paginate by supplying optional parameters pos and count
-        /// specify format by appending /json or /xml to url
+        /// You may paginate by supplying optional parameters pos and count
+        /// Specify format by appending /json or /xml to url or specify Content Type Header. 
         /// response ordered by last modified 
         /// </summary>
         /// <param name="project">the project</param>
@@ -207,14 +205,14 @@ namespace OVE.Service.AssetManager.Controllers {
         /// Return all assets for a given Project and Name
         /// Use this to get versions of the same Asset 
         /// you may paginate by supplying optional parameters pos and count
-        /// specify format by appending .json or .xml to url
-        /// response ordered by last modified 
+        /// specify format by appending .json or .xml to url or specify Content Type Header. 
+        /// Response is ordered by last modified 
         /// </summary>
-        /// <param name="project">the project</param>
-        /// <param name="name"></param>
-        /// <param name="pos">pos to start at (zero based)</param>
+        /// <param name="project">The project</param>
+        /// <param name="name">Name of the Asset</param>
+        /// <param name="pos">Position to start at (zero based)</param>
         /// <param name="count">number to return</param>
-        /// <returns>a list of Assets</returns>
+        /// <returns>A list of Assets</returns>
         [HttpGet]
         [Route("/OVEAssetModelController/ListAssets/Project/Name/{pos}/{count}.{format?}")]
         public async Task<ActionResult<List<OVEAssetModel>>> ListAssets(string project,string name, int pos = 0, int count = 100) {
@@ -232,7 +230,7 @@ namespace OVE.Service.AssetManager.Controllers {
         /// </summary>
         /// <param name="project">Project name</param>
         /// <param name="name">Asset name</param>
-        /// <returns>guid</returns>
+        /// <returns>guid of asset</returns>
         [HttpGet]
         [Route("/OVEAssetModelController/GetId/.{format?}")]
         public  async Task<ActionResult<string>> GetId(string project, string name) {
@@ -246,7 +244,7 @@ namespace OVE.Service.AssetManager.Controllers {
         }
 
         /// <summary>
-        /// Return the partial uri 
+        /// Return the uri to download the Asset
         /// </summary>
         /// <param name="project">project name</param>
         /// <param name="name">Asset name</param>
@@ -283,6 +281,32 @@ namespace OVE.Service.AssetManager.Controllers {
         #endregion
 
         /// <summary>
+        /// Reset the processing state on a given asset
+        /// </summary>
+        /// <param name="id">id of the asset</param>
+        /// <param name="format">optional format of the parameter</param>
+        /// <returns>the updated asset</returns>
+        [HttpGet]
+        [Route("/OVEAssetModelController/ResetProcessing/{id}.{format?}")]
+        public async Task<ActionResult<OVEAssetModel>> ResetProcessing(string id,string format = null) {
+            if (id == null) {
+                return NotFound();
+            }
+
+            var assetModel = await _context.AssetModels
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (assetModel == null) {
+                return NotFound();
+            }
+
+            assetModel.ProcessingState = 0;
+
+            await _context.SaveChangesAsync();
+
+            return string.IsNullOrWhiteSpace(format) ? RedirectToAction(nameof(Index)) : this.FormatOrView(assetModel);
+        }
+
+        /// <summary>
         /// Return the index page
         /// </summary>
         /// <returns>index page</returns>
@@ -316,7 +340,6 @@ namespace OVE.Service.AssetManager.Controllers {
 
         /// <summary>
         /// Returns the create page
-        /// GET: assetModels/Create
         /// </summary>
         /// <returns>creation gui page</returns>
         [HttpGet]
@@ -327,7 +350,7 @@ namespace OVE.Service.AssetManager.Controllers {
 
         /// <summary>
         /// Post a new asset
-        /// Simplest Post is form-data with upload (file) with Project,Name and Service
+        /// Simplest Post is form-data with upload (file) with Project, Name and Service
         ///  </summary>
         /// <param name="oveAssetModel">asset model (Project, Name, Description)</param>
         /// <param name="upload">the asset file to upload</param>
@@ -350,7 +373,7 @@ namespace OVE.Service.AssetManager.Controllers {
             if (ModelState.IsValid) {
                 // then try and save it
                 try {
-                    await _fileOperations.SaveFile(oveAssetModel, upload);
+                    await _fileOperations.Save(oveAssetModel, upload);
 
                     _logger.LogInformation("received and uploaded a file :) " + oveAssetModel.StorageLocation);
                 }
@@ -371,7 +394,6 @@ namespace OVE.Service.AssetManager.Controllers {
         
         /// <summary>
         /// Return an edit view for a given assetModel by Guid
-        /// GET: assetModels/Edit/5
         /// </summary>
         /// <param name="id">guid for the asset</param>
         /// <returns></returns>
@@ -393,16 +415,15 @@ namespace OVE.Service.AssetManager.Controllers {
         /// <summary>
         /// Post an edit to an asset model by its guid.
         /// Changing the file is optional, if triggered it will result in reprocessing.
-        /// POST: assetModels/Edit/5
         /// </summary>
         /// <param name="id">guid for the asset</param>
         /// <param name="oveAssetModel">The asset Model</param>
         /// <param name="upload">optional new file</param>
-        /// <returns></returns>
+        /// <returns>asset</returns>
         [HttpPost]
         [DisableRequestSizeLimit]
         [Route("/OVEAssetModelController/Edit/{id}.{format?}")]
-        public async Task<ActionResult<OVEAssetModel>> Edit(string id, [Bind("Project,Name,Description,Id,StorageLocation,Processed,ProcessingState,Service,AssetMeta,LastModified")]
+        public async Task<ActionResult<OVEAssetModel>> Edit(string id, [Bind("Project,Name,Description,Id,StorageLocation,Processed,Service,AssetMeta,LastModified")]
             OVEAssetModel oveAssetModel,[FromForm] IFormFile upload) {
             if (id != oveAssetModel.Id) {
                 return NotFound();
@@ -427,7 +448,7 @@ namespace OVE.Service.AssetManager.Controllers {
             if (ModelState.IsValid) {
                 try {
                     if (oldAssetModel.Project != oveAssetModel.Project) {
-                       await _fileOperations.MoveFile(oldAssetModel, oveAssetModel); // todo not implemented
+                       await _fileOperations.Move(oldAssetModel, oveAssetModel); // todo not implemented
                     }
                     //stop EF from tracking the old version so that it will allow you to update the new version
                     _context.Entry(oldAssetModel).State = EntityState.Detached;
@@ -437,11 +458,11 @@ namespace OVE.Service.AssetManager.Controllers {
                             ModelState.AddModelError("Service", "Service does not support File Type");
                         }
 
-                        if (!await _fileOperations.DeleteFile(oveAssetModel)) {
+                        if (!await _fileOperations.Delete(oveAssetModel)) {
                             return UnprocessableEntity("unable to delete old file");
                         }
 
-                        if (!await _fileOperations.SaveFile(oveAssetModel, upload)) {
+                        if (!await _fileOperations.Save(oveAssetModel, upload)) {
                             return UnprocessableEntity("unable to save new file");
                         }
                         need2UpdateProcessingState = true;
@@ -462,8 +483,8 @@ namespace OVE.Service.AssetManager.Controllers {
                     if (!_context.AssetModels.Any(e => e.Id == oveAssetModel.Id)) {
                         return NotFound();
                     }
-
-                    throw;
+                    _logger.LogError("Concurrency Error updating database ");
+                    return Conflict();
                 }
 
                 return RedirectToAction(nameof(Index));
@@ -474,7 +495,6 @@ namespace OVE.Service.AssetManager.Controllers {
 
         /// <summary>
         /// Return a view for confirming you want to remove an asset
-        /// GET: assetModels/RemovableView/5
         /// </summary>
         /// <param name="id">guid of the asset model</param>
         /// <returns>confirm of removal webpage</returns>
@@ -496,7 +516,6 @@ namespace OVE.Service.AssetManager.Controllers {
 
         /// <summary>
         /// Post to remove an asset from the database.
-        /// POST: assetModels/Remove/5
         /// </summary>
         /// <param name="id">guid of the asset model</param>
         /// <param name="format">optional format of response (xml or json)</param>
@@ -507,7 +526,7 @@ namespace OVE.Service.AssetManager.Controllers {
             var assetModel = await _context.AssetModels.FindAsync(id);
 
             // delete files
-            if (!await _fileOperations.DeleteFile(assetModel)) {
+            if (!await _fileOperations.Delete(assetModel)) {
                 return UnprocessableEntity("failed to delete s3 files");
             }
             

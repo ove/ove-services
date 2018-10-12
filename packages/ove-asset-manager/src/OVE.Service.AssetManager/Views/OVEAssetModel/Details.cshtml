@@ -40,7 +40,8 @@
             @Html.DisplayNameFor(model => model.ProcessingState)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.ProcessingState)
+            @{ var state = Services.TranslateProcessingState(Model);}
+            @Html.DisplayFor(model => state)
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.ProcessingErrors)
@@ -73,5 +74,5 @@
     <a asp-action="Index">Back to List</a>
 </div>
 <div>
-    <iframe src="@{ Services.GetViewURL(Model); }" onload="this.width=screen.width;this.height=50%;" />
+    <iframe src="@{ Services.GetViewUrl(Model); }" onload="this.width=screen.width;this.height=50%" />
 </div>

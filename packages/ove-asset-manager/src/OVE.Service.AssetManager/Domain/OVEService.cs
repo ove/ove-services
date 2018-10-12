@@ -5,10 +5,12 @@ namespace OVE.Service.AssetManager.Domain {
     /// Metadata about OVE Services registered with the Asset Manager 
     /// </summary>
     public class OVEService {
+        
         /// <summary>
         /// Service Name
         /// </summary>
         public string Name { get; set; }
+        
         /// <summary>
         /// List of file types permitted e.g. .png
         /// lowercase with period please. 
@@ -20,5 +22,11 @@ namespace OVE.Service.AssetManager.Domain {
         /// Must include {id} which will be replaced with id of asset
         /// </summary>
         public string ViewIFrameUrl { get; set; }
+
+        /// <summary>
+        /// An Enum for converting integer processing states into friendly errors
+        /// </summary>
+        public Dictionary<string,string> ProcessingStates { get; set; }
+        
     }
 }

@@ -52,14 +52,14 @@ namespace OVE.Service.AssetManager.Domain {
         }
 
 #pragma warning disable 1998
-        public async Task<bool> MoveFile(OVEAssetModel oldAsset, OVEAssetModel newAsset) {
+        public async Task<bool> Move(OVEAssetModel oldAsset, OVEAssetModel newAsset) {
 #pragma warning restore 1998
             //todo this is hard because we might have to move between s3 buckets and that is complex
             // https://stackoverflow.com/questions/9664904/best-way-to-move-files-between-s3-buckets
             throw new NotImplementedException();
         }
 
-        public async Task<bool> DeleteFile(OVEAssetModel asset) {
+        public async Task<bool> Delete(OVEAssetModel asset) {
             _logger.LogInformation("about to delete file "+asset);
             try {
                 using (var s3Client = GetS3Client(_configuration)) {
@@ -97,7 +97,7 @@ namespace OVE.Service.AssetManager.Domain {
             }
         }
 
-        public async Task<bool> SaveFile(OVEAssetModel asset, IFormFile upload) {
+        public async Task<bool> Save(OVEAssetModel asset, IFormFile upload) {
             _logger.LogInformation("about to upload "+asset);
 
             // set up the filename            
@@ -151,8 +151,9 @@ namespace OVE.Service.AssetManager.Domain {
         /// Sanitize the filename for s3
         /// https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html
         /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
+        /// <param name="input">input file name</param>
+        /// <param name="extension">file extension</param>
+        /// <returns>sanitized version</returns>
         private string S3Sanitize(string input,string extension) {
             try {
                 input = input.Substring(0,Math.Min( input.Length, 63 - extension.Length)); // max permitted less file extension 

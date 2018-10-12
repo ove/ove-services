@@ -26,7 +26,8 @@ namespace OVE.Service.AssetManager {
                 Console.WriteLine("Changing ContentRoot to " + configBasePath);
             }
 
-            return WebHost.CreateDefaultBuilder(args)
+            return WebHost.CreateDefaultBuilder(args)               
+                .UseKestrel(c => c.AddServerHeader = false ) 
                 .UseContentRoot(configBasePath)
                 .UseStartup<Startup>()
                 .ConfigureLogging((hostingContext, logging) => {
@@ -57,10 +58,7 @@ namespace OVE.Service.AssetManager {
                 }
             }
 
-            host.Run();
-
         }
-
 
     }
 }

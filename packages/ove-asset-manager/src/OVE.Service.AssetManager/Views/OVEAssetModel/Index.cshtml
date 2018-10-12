@@ -1,4 +1,6 @@
-﻿@model IEnumerable<OVE.Service.AssetManager.Models.OVEAssetModel>
+﻿@using OVE.Service.AssetManager.Domain
+@model IEnumerable<OVE.Service.AssetManager.Models.OVEAssetModel>
+@inject ServiceRepository ServiceRepository
 
 @{
     ViewData["Title"] = "Index";
@@ -52,7 +54,9 @@
                 @Html.DisplayFor(modelItem => item.StorageLocation)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ProcessingState)
+                @{ var state= ServiceRepository.TranslateProcessingState(item); }
+                @Html.DisplayFor(modelItem => state)
+                <a href="/OVEAssetModelController/ResetProcessing/@item.Id">Reset</a>
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
