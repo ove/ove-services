@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using OVE.Service.ImageTiles.Models;
 
 namespace OVE.Service.ImageTiles.Domain {
@@ -46,9 +49,6 @@ namespace OVE.Service.ImageTiles.Domain {
         }
 
         /// <summary>
-        /// Setup:
-        /// 0) Register Service with Asset Manager
-        /// 
         /// Steps to process an image:
         /// 1) Get the asset to process
         /// 2) Download it
@@ -71,26 +71,49 @@ namespace OVE.Service.ImageTiles.Domain {
 
             OVEAssetModel todo = null;
             try {
-
                 //1) get an Asset to process
+                todo = await FindAssetToProcess();
 
                 if (todo == null) {
                     _logger.LogInformation("no work for Image Processor, running Processors = " +
                                            (maxConcurrent - _processing.CurrentCount - 1));
                 }
                 else {
+                    _logger.LogInformation("Found asset "+todo.Id);
 
+                    //2) download it
                 }
             } catch (Exception e) {
                 _logger.LogError(e, "Exception in Image Processing");
                 if (todo != null) {
-
+                    // log the error
 
                 }
             } finally {
                 _processing.Release();
             }
 
+        }
+
+        private async Task<OVEAssetModel> FindAssetToProcess() {
+            OVEAssetModel todo;
+            string url = _configuration.GetValue<string>("AssetManagerHost") +
+                         _configuration.GetValue<string>("WorkItemApi") +
+                         _configuration.GetValue<string>("ServiceName") + ".json";
+
+            _logger.LogInformation("about to get work item from url " + url);
+
+            using (var client = new HttpClient()) {
+                var responseMessage = await client.GetAsync(url);
+
+                _logger.LogInformation("Response was " + responseMessage.StatusCode);
+                if (responseMessage.StatusCode == HttpStatusCode.OK) {
+                    var assetString = await responseMessage.Content.ReadAsStringAsync();
+                    todo = JsonConvert.DeserializeObject<OVEAssetModel>(assetString);
+                }
+            }
+
+            return todo;
         }
     }
 }

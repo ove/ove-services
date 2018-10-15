@@ -109,7 +109,7 @@ namespace OVE.Service.ImageTiles
             var hostUrl = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.First();
             service.ViewIFrameUrl = hostUrl + "api/something";//todo fill once api written 
 
-            string url = Configuration.GetValue<string>("RegistrationUrl");
+            string url = Configuration.GetValue<string>("AssetManagerHost")+Configuration.GetValue<string>("RegistrationUrl");
 
             Console.WriteLine("About to register with url "+url+" we are on "+hostUrl);
 

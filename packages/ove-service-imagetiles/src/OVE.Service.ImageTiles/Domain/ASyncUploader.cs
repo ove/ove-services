@@ -107,7 +107,7 @@ namespace OVE.Service.ImageTiles.Domain {
 
             try {
                 // do some processing!
-
+/*
                 _logger.LogInformation("Starting uploading of Image Model id=" + todo.Id);
 
                 //figure out where the image is 
@@ -169,7 +169,7 @@ namespace OVE.Service.ImageTiles.Domain {
 
                 // delete local files 
                 _fileOperations.DeleteFile(todo);
-
+                */
             }
             catch (Exception e) {
                 _logger.LogError(e, "Exception in uploading ");
