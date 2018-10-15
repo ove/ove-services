@@ -69,23 +69,32 @@ namespace OVE.Service.ImageTiles.Domain {
                 return;
             }
 
-            OVEAssetModel todo = null;
+            OVEAssetModel asset = null;
             try {
-                //1) get an Asset to process
-                todo = await FindAssetToProcess();
+                // 1) get an Asset to process
+                asset = await FindAssetToProcess();
 
-                if (todo == null) {
+                if (asset == null) {
                     _logger.LogInformation("no work for Image Processor, running Processors = " +
                                            (maxConcurrent - _processing.CurrentCount - 1));
                 }
                 else {
-                    _logger.LogInformation("Found asset "+todo.Id);
+                    _logger.LogInformation("Found asset "+asset.Id);
 
-                    //2) download it
+                    // 2) download it
+                    string url = await GetAssetUri(asset);
+
+                    string localUri = await DownloadAsset(url,asset);
+
+                    // 3) Create DZI file 
+
+                    // 4) Upload it
+
+                    // 5) Mark it as completed
                 }
             } catch (Exception e) {
                 _logger.LogError(e, "Exception in Image Processing");
-                if (todo != null) {
+                if (asset != null) {
                     // log the error
 
                 }
@@ -95,8 +104,30 @@ namespace OVE.Service.ImageTiles.Domain {
 
         }
 
+        private async Task<string> DownloadAsset(string url, OVEAssetModel asset) {
+            throw new NotImplementedException();
+        }
+
+        private async Task<string> GetAssetUri(OVEAssetModel asset) {
+            
+            string url = _configuration.GetValue<string>("AssetManagerHost") +
+                         _configuration.GetValue<string>("AssetUrlApi") +
+                         asset.Id;
+
+            using (var client = new HttpClient()) {
+                var responseMessage = await client.GetAsync(url);
+                if (responseMessage.StatusCode == HttpStatusCode.OK) {
+                    var assetString = await responseMessage.Content.ReadAsStringAsync();
+                    _logger.LogInformation("About to download asset from url "+assetString);
+                    return assetString;
+                }
+            }
+
+            throw new Exception("Failed to get download URL for asset");
+        }
+
         private async Task<OVEAssetModel> FindAssetToProcess() {
-            OVEAssetModel todo;
+            OVEAssetModel todo = null;
             string url = _configuration.GetValue<string>("AssetManagerHost") +
                          _configuration.GetValue<string>("WorkItemApi") +
                          _configuration.GetValue<string>("ServiceName") + ".json";
