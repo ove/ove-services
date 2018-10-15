@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Net.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
@@ -92,11 +96,37 @@ namespace OVE.Service.ImageTiles
                 options.IncludeXmlComments(filePath);
                 options.DescribeAllEnumsAsStrings();
             });
+
+        }
+
+        /// <summary>
+        /// Register this OVE service with the Asset Manager Service 
+        /// </summary>
+        /// <param name="app">kestrel app</param>
+        private async void RegisterServiceWithAssetManager(IApplicationBuilder app) {
+            OVEService service = new OVEService();
+            Configuration.Bind("Service",service);
+            var hostUrl = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.First();
+            service.ViewIFrameUrl = hostUrl + "api/something";//todo fill once api written 
+
+            string url = Configuration.GetValue<string>("RegistrationUrl");
+
+            Console.WriteLine("About to register with url "+url+" we are on "+hostUrl);
+
+            using (var client = new HttpClient()) {
+                var responseMessage = await client.PostAsJsonAsync(url, service);
+                
+                Console.WriteLine("Result of Registration was "+responseMessage.StatusCode );
+            }
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            
+            RegisterServiceWithAssetManager(app);
+
             // error pages
             if (env.IsDevelopment())
             {
