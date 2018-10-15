@@ -1,8 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Amazon.S3;
+using Amazon.S3.Transfer;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -55,7 +59,7 @@ namespace OVE.Service.ImageTiles.Domain {
         /// 3) Create DZI
         /// 4) Upload it
         /// 5) Mark it as completed
-        ///
+        /// // todo add logging at intermediate states
         /// API required:
         /// 1) process particular asset ID
         /// 2) get .dzi file for asset ID
@@ -87,16 +91,22 @@ namespace OVE.Service.ImageTiles.Domain {
                     string localUri = await DownloadAsset(url,asset);
 
                     // 3) Create DZI file 
+                    var res = _processor.ProcessFile(localUri);
+                    _logger.LogInformation("Processed file "+res);
 
                     // 4) Upload it
-
+                    UploadDirectory(localUri,asset);
                     // 5) Mark it as completed
+                    //todo
+                    // 6) delete local files 
+                    //todo
                 }
             } catch (Exception e) {
+                
                 _logger.LogError(e, "Exception in Image Processing");
                 if (asset != null) {
-                    // log the error
-
+                    // log the error 
+                    //todo
                 }
             } finally {
                 _processing.Release();
@@ -104,8 +114,87 @@ namespace OVE.Service.ImageTiles.Domain {
 
         }
 
+        private const string S3ClientAccessKey = "s3Client:AccessKey";
+        private const string S3ClientSecret = "s3Client:Secret";
+        private const string S3ClientServiceUrl = "s3Client:ServiceURL";
+
+        private IAmazonS3 GetS3Client() {
+            
+            IAmazonS3 s3Client = new AmazonS3Client(
+                _configuration.GetValue<string>(S3ClientAccessKey),
+                _configuration.GetValue<string>(S3ClientSecret),
+                new AmazonS3Config {
+                    ServiceURL = _configuration.GetValue<string>(S3ClientServiceUrl),
+                    UseHttp = true, 
+                    ForcePathStyle = true
+                }
+            );
+            _logger.LogInformation("Created new S3 Client");
+            return s3Client;
+        }
+
+
+        private async void UploadDirectory(string file, OVEAssetModel todo) {
+            
+            using (var fileTransferUtility = new TransferUtility(GetS3Client())) {
+                
+                // upload the .dzi file
+                var assetRootFolder = Path.GetDirectoryName(todo.StorageLocation);
+
+                var fileDirectory = Path.ChangeExtension(file, ".dzi").Replace(".dzi", "_files");
+
+                var filesKeyPrefix =  assetRootFolder+ "/"+new DirectoryInfo(fileDirectory).Name + "/"; // upload to the right folder
+
+                TransferUtilityUploadRequest req = new TransferUtilityUploadRequest() {
+                    BucketName = todo.Project,
+                    Key = Path.ChangeExtension(todo.StorageLocation,".dzi"),
+                    FilePath = Path.ChangeExtension(file, ".dzi")
+                    
+                };
+                fileTransferUtility.Upload(req);
+                await fileTransferUtility.UploadAsync(Path.ChangeExtension(file, ".dzi"), todo.Project);
+                // upload the tile files 
+                
+                TransferUtilityUploadDirectoryRequest request =
+                    new TransferUtilityUploadDirectoryRequest() {
+                        KeyPrefix = filesKeyPrefix,
+                        Directory = fileDirectory,
+                        BucketName = todo.Project,
+                        SearchOption = SearchOption.AllDirectories,
+                        SearchPattern = "*.*"
+                    };
+
+                await fileTransferUtility.UploadDirectoryAsync(request);
+            }
+        }
+
+        public string GetImagesBasePath() {
+            var rootDirectory = _configuration.GetValue<string>(WebHostDefaults.ContentRootKey);
+            var filepath = Path.Combine(rootDirectory, _configuration.GetValue<string>("ImageStorageConfig:BasePath"));
+            if (!Directory.Exists(filepath)) {
+                _logger.LogInformation("Creating directory for images " + filepath);
+                Directory.CreateDirectory(filepath);
+            }
+
+            Thread.Sleep(3000);
+
+            return filepath;
+        }
+
         private async Task<string> DownloadAsset(string url, OVEAssetModel asset) {
-            throw new NotImplementedException();
+            // make temp directory
+            // download url
+
+            string localFile = Path.Combine(GetImagesBasePath(), asset.StorageLocation);
+            Directory.CreateDirectory(Path.GetDirectoryName(localFile));
+
+            _logger.LogInformation("About to download to "+localFile);
+
+            using (var client = new WebClient()) {
+                 client.DownloadFile(new Uri(url),localFile);
+            }
+
+            return localFile.Replace("/","\\");
         }
 
         private async Task<string> GetAssetUri(OVEAssetModel asset) {

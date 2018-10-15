@@ -21,7 +21,7 @@ namespace OVE.Service.ImageTiles.Domain {
 
       public void DeleteFile(OVEAssetModel imageFileModel) {
             if (imageFileModel.StorageLocation == null) return;
-            var path = imageFileModel.StorageLocation;
+            var path = imageFileModel.StorageLocation;//todo set this 
             var file = Path.Combine(path, imageFileModel.StorageLocation);
 
             if (File.Exists(file)) {

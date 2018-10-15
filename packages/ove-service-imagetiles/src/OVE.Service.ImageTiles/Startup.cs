@@ -62,7 +62,7 @@ namespace OVE.Service.ImageTiles
 
             //start the processor microservice 
             services.AddHostedService<ASyncImageProcessor>();
-            services.AddHostedService<ASyncUploader>();
+         //   services.AddHostedService<ASyncUploader>();
 
             // dependency injection of domain classes 
             services.AddSingleton(Configuration);
