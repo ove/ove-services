@@ -12,7 +12,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using OVE.Service.ImageTiles.DbContexts;
 using OVE.Service.ImageTiles.Models;
 
 namespace OVE.Service.ImageTiles.Domain {
@@ -71,7 +70,7 @@ namespace OVE.Service.ImageTiles.Domain {
             _timer?.Dispose();
         }
 
-        public static async void DeleteImageModel(ImageFileModel todo, IConfiguration configuration) {
+        public static async void DeleteImageModel(OVEAssetModel todo, IConfiguration configuration) {
             using (var s3Client = GetS3Client(configuration)) {
                 // delete image
                 await s3Client.DeleteObjectAsync(todo.Project, todo.StorageLocation);
@@ -104,112 +103,89 @@ namespace OVE.Service.ImageTiles.Domain {
                 _logger.LogInformation("Tried to fire uploader processing but too many threads already running");
                 return;
             }
+            OVEAssetModel todo = null;
 
-            using (var scope = _serviceProvider.CreateScope()) {
+            try {
+                // do some processing!
 
-                using (var context = scope.ServiceProvider.GetRequiredService<ImageFileContext>()) {
+                _logger.LogInformation("Starting uploading of Image Model id=" + todo.Id);
 
-                    ImageFileModel todo = null;
-                    try {
+                //figure out where the image is 
+                var file = "todo" + todo.Project;
+                file = Path.Combine(file, todo.StorageLocation);
 
-                        todo = await context.ImageFiles.FirstOrDefaultAsync(i => i.ProcessingState == 2);
+                if (!File.Exists(file)) {
+                    throw new Exception("Found an orphan image model - no corresponding file " + todo.Id);
+                }
 
-                        if (todo != null) {
-                            todo.ProcessingState = 3;
-                            todo.ProcessingErrors = "uploading";
+                // processing 
 
-                            context.SaveChanges(); // this may throw a DbUpdateConcurrencyException 
+                using (var s3Client = GetS3Client(_configuration)) {
+                    // find or create the bucket
+                    var buckets = await s3Client.ListBucketsAsync();
+                    if (buckets.Buckets.FirstOrDefault(b => b.BucketName == todo.Project) == null) {
+                        var res = await s3Client.PutBucketAsync(todo.Project);
+                        if (res.HttpStatusCode != HttpStatusCode.OK) {
+                            throw new Exception("could not create bucket" + todo.Project);
                         }
 
-                        if (todo == null) {
-                            _logger.LogInformation("no work for Uploader Processor, running Processors = " +
-                                                   (maxConcurrent - _processing.CurrentCount - 1));
-                        }
-                        else {
-                            // do some processing!
+                        var openBuckets =
+                            "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":[\"*\"]},\"Action\":[\"s3:GetBucketLocation\",\"s3:ListBucket\"],\"Resource\":[\"arn:aws:s3:::" +
+                            todo.Project +
+                            "\"]},{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":[\"*\"]},\"Action\":[\"s3:GetObject\"],\"Resource\":[\"arn:aws:s3:::" +
+                            todo.Project + "/*\"]}]}";
 
-                            _logger.LogInformation("Starting uploading of Image Model id=" + todo.Id);
-
-                            //figure out where the image is 
-                            var file = Path.Combine(ImageFileModel.GetImagesBasePath(_configuration, _logger),
-                                todo.Project);
-                            file = Path.Combine(file, todo.StorageLocation);
-
-                            if (!File.Exists(file)) {
-                                throw new Exception("Found an orphan image model - no corresponding file " + todo.Id);
-                            }
-
-                            // processing 
-
-                            using (var s3Client = GetS3Client(_configuration)) {
-                                // find or create the bucket
-                                var buckets =await s3Client.ListBucketsAsync();
-                                if (buckets.Buckets.FirstOrDefault(b => b.BucketName == todo.Project) == null) {
-                                    var res = await s3Client.PutBucketAsync(todo.Project);
-                                    if (res.HttpStatusCode != HttpStatusCode.OK) {
-                                        throw new Exception("could not create bucket" + todo.Project);
-                                    }
-
-                                    var openBuckets =
-                                        "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":[\"*\"]},\"Action\":[\"s3:GetBucketLocation\",\"s3:ListBucket\"],\"Resource\":[\"arn:aws:s3:::"+todo.Project+"\"]},{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":[\"*\"]},\"Action\":[\"s3:GetObject\"],\"Resource\":[\"arn:aws:s3:::"+todo.Project+"/*\"]}]}";
-
-                                    await s3Client.PutBucketPolicyAsync(todo.Project, openBuckets);
-                                }
- 
-                                using (var fileTransferUtility = new TransferUtility(s3Client)) {
-                                    // upload the image file
-                                    await fileTransferUtility.UploadAsync(file,todo.Project);
-                                    // upload the .dzi file
-                                    var dzifile = Path.ChangeExtension(file,".dzi");
-                                    await fileTransferUtility.UploadAsync(dzifile,todo.Project);
-                                    // upload the tile files 
-                                    var fileDirectory = dzifile.Replace(".dzi","_files");
-
-                                    var keyPrefix =  new DirectoryInfo(fileDirectory).Name+"/"; // upload to the right folder
-                                    TransferUtilityUploadDirectoryRequest request =
-                                        new TransferUtilityUploadDirectoryRequest() {
-                                            KeyPrefix = keyPrefix,
-                                            Directory = fileDirectory,
-                                            BucketName = todo.Project,
-                                            SearchOption =  SearchOption.AllDirectories,
-                                            SearchPattern = "*.*"
-                                        };
-
-                                    await fileTransferUtility.UploadDirectoryAsync(request);                            
-                                }
-
-                            }
-                            // say that we did it
-                            todo.ProcessingState = 4;
-                            todo.ProcessingErrors = "uploaded";
-                            context.Update(todo);
-                            await context.SaveChangesAsync();
-
-                            // delete local files 
-                            _fileOperations.DeleteFile(todo);
-                        }
+                        await s3Client.PutBucketPolicyAsync(todo.Project, openBuckets);
                     }
-                    catch (DbUpdateConcurrencyException e) {
-                        // do nothing this is intended to stop multiple 
-                        _logger.LogDebug("stopped double processing" + e);
+
+                    using (var fileTransferUtility = new TransferUtility(s3Client)) {
+                        // upload the image file
+                        await fileTransferUtility.UploadAsync(file, todo.Project);
+                        // upload the .dzi file
+                        var dzifile = Path.ChangeExtension(file, ".dzi");
+                        await fileTransferUtility.UploadAsync(dzifile, todo.Project);
+                        // upload the tile files 
+                        var fileDirectory = dzifile.Replace(".dzi", "_files");
+
+                        var keyPrefix = new DirectoryInfo(fileDirectory).Name + "/"; // upload to the right folder
+                        TransferUtilityUploadDirectoryRequest request =
+                            new TransferUtilityUploadDirectoryRequest() {
+                                KeyPrefix = keyPrefix,
+                                Directory = fileDirectory,
+                                BucketName = todo.Project,
+                                SearchOption = SearchOption.AllDirectories,
+                                SearchPattern = "*.*"
+                            };
+
+                        await fileTransferUtility.UploadDirectoryAsync(request);
                     }
-                    catch (Exception e) {
-                        _logger.LogError(e, "Exception in uploading ");
-                        if (todo != null) {
-                            // log to db
-                            todo.ProcessingState = -1;
-                            todo.ProcessingErrors = e.ToString();
-                            context.Update(todo);
-                            await context.SaveChangesAsync();
-                        }
-                    }
-                    finally {
-                        _processing.Release();
-                    }
+
+                }
+
+                // say that we did it
+                todo.ProcessingState = 4;
+                todo.ProcessingErrors = "uploaded";
+
+
+                // delete local files 
+                _fileOperations.DeleteFile(todo);
+
+            }
+            catch (Exception e) {
+                _logger.LogError(e, "Exception in uploading ");
+                if (todo != null) {
+                    // log to db
+                    todo.ProcessingState = -1;
+                    todo.ProcessingErrors = e.ToString();
+
                 }
             }
+            finally {
+                _processing.Release();
+            }
+
         }
-        
+
     }
 
 }

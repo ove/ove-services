@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\Database\" />
+    <Folder Include="wwwroot\ImageStore\" />
   </ItemGroup>
 
   <ItemGroup>

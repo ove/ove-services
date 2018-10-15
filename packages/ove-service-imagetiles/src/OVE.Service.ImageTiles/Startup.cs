@@ -5,11 +5,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
-using OVE.Service.ImageTiles.DbContexts;
 using OVE.Service.ImageTiles.Domain;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -70,9 +68,6 @@ namespace OVE.Service.ImageTiles
             // use mvc
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            // add the db
-            services.AddDbContext<ImageFileContext>(options => options.UseSqlite("Data Source=ImageFiles.db"));
-
             // set up swagger
             services.AddSwaggerGen(options =>
             {
@@ -81,7 +76,7 @@ namespace OVE.Service.ImageTiles
                 {
                     Title = "OVE Image Tile Microservice",
                     Version = _version,
-                    Description = "The OVE Image Tile Microservice is used to upload images and produce tile services from them. " + 
+                    Description = "The OVE Image Tile Microservice is used to process Image assets to produce tile services from them. " + 
                                   "This works within the OVE (Open Visualization Environment) is an open-source software stack, " + 
                                   "designed to be used in large scale visualization environments like the [Imperial College](http://www.imperial.ac.uk) " +
                                   "[Data Science Institute\'s](http://www.imperial.ac.uk/data-science/) [Data Observatory](http://www.imperial.ac.uk/data-science/data-observatory/). " +
