@@ -97,9 +97,9 @@ namespace OVE.Service.ImageTiles.Domain {
                     // 4) Upload it
                     UploadDirectory(localUri,asset);
                     // 5) Mark it as completed
-                    //todo
+                    //todo on http://localhost:8181/OVEAssetModelController/SetProcessingState/a/2/json%20?message=something
                     // 6) delete local files 
-                    //todo
+                    Directory.Delete(Path.GetDirectoryName(localUri), true);
                 }
             } catch (Exception e) {
                 
