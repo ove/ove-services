@@ -97,8 +97,8 @@ namespace OVE.Service.ImageTiles {
         private async void RegisterServiceWithAssetManager(IApplicationBuilder app) {
             OVEService service = new OVEService();
             Configuration.Bind("Service", service);
-            var hostUrl = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.First();
-            service.ViewIFrameUrl = hostUrl + "api/something"; //todo fill once api written 
+            
+            service.ViewIFrameUrl = Configuration.GetValue<string>("ServiceHostUrl") + "/api/ImageController/ViewImage/?id={id}"; 
 
             // update the real processing states
             service.ProcessingStates.Clear();
@@ -111,7 +111,7 @@ namespace OVE.Service.ImageTiles {
             string url = Configuration.GetValue<string>("AssetManagerHost") +
                          Configuration.GetValue<string>("RegistrationApi");
 
-            Console.WriteLine("About to register with url " + url + " we are on " + hostUrl);
+            Console.WriteLine("About to register with url " + url + " we are on " + service.ViewIFrameUrl);
 
             using (var client = new HttpClient()) {
                 var responseMessage = await client.PostAsJsonAsync(url, service);

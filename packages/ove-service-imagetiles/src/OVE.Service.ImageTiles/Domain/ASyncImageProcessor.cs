@@ -154,13 +154,13 @@ namespace OVE.Service.ImageTiles.Domain {
         }
 
 
-        private async Task<bool> UploadDirectory(string file, OVEAssetModel todo) {
+        private async Task<bool> UploadDirectory(string file, OVEAssetModel asset) {
             _logger.LogInformation("about to upload directory " + file);
 
             using (var fileTransferUtility = new TransferUtility(GetS3Client())) {
 
                 // upload the .dzi file
-                var assetRootFolder = Path.GetDirectoryName(todo.StorageLocation);
+                var assetRootFolder = Path.GetDirectoryName(asset.StorageLocation);
 
                 var fileDirectory = Path.ChangeExtension(file, ".dzi").Replace(".dzi", "_files");
 
@@ -168,8 +168,8 @@ namespace OVE.Service.ImageTiles.Domain {
                     assetRootFolder + "/" + new DirectoryInfo(fileDirectory).Name + "/"; // upload to the right folder
 
                 TransferUtilityUploadRequest req = new TransferUtilityUploadRequest() {
-                    BucketName = todo.Project,
-                    Key = Path.ChangeExtension(todo.StorageLocation, ".dzi"),
+                    BucketName = asset.Project,
+                    Key = Path.ChangeExtension(asset.StorageLocation, ".dzi"),
                     FilePath = Path.ChangeExtension(file, ".dzi")
 
                 };
@@ -181,7 +181,7 @@ namespace OVE.Service.ImageTiles.Domain {
                     new TransferUtilityUploadDirectoryRequest() {
                         KeyPrefix = filesKeyPrefix,
                         Directory = fileDirectory,
-                        BucketName = todo.Project,
+                        BucketName = asset.Project,
                         SearchOption = SearchOption.AllDirectories,
                         SearchPattern = "*.*"
                     };
@@ -222,7 +222,7 @@ namespace OVE.Service.ImageTiles.Domain {
 
             _logger.LogInformation("Finished downloading to " + localFile);
 
-            return localFile.Replace("/", "\\");
+            return localFile.Replace("/",Path.DirectorySeparatorChar.ToString()).Replace("\\",Path.DirectorySeparatorChar.ToString());
         }
 
         private async Task<string> GetAssetUri(OVEAssetModel asset) {

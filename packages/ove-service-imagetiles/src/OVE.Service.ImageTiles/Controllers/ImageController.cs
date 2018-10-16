@@ -7,9 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using OVE.Service.ImageTiles.Domain;
+using OVE.Service.ImageTiles.Models;
 
-namespace OVE.Service.ImageTiles.Controllers
-{
+namespace OVE.Service.ImageTiles.Controllers {
     /// <summary>
     /// An API for the Image Tile service
     /// API required:
@@ -18,13 +18,28 @@ namespace OVE.Service.ImageTiles.Controllers
     /// </summary>
     [ApiController]
     [FormatFilter]
-    public class ImageController : ControllerBase {
+    public class ImageController : Controller {
         private readonly ILogger<ImageController> _logger;
         private readonly IConfiguration _configuration;
 
-        public ImageController(ILogger<ImageController> logger,IConfiguration configuration) {
+        public ImageController(ILogger<ImageController> logger, IConfiguration configuration) {
             _logger = logger;
             _configuration = configuration;
+        }
+
+        /// <summary>
+        /// return a HTML view of the image
+        /// </summary>
+        /// <param name="id">id of the asset</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("/api/ImageController/ViewImage/")]
+        public async Task<IActionResult> ViewImage(string id) {
+            return View(new ImageViewModel {
+                Id = id, 
+                AssetUrl = await GetAssetUrl(id), 
+                DziUrl = (await GetDZIbyId(id))?.Value
+            });
         }
 
         /// <summary>
@@ -48,16 +63,16 @@ namespace OVE.Service.ImageTiles.Controllers
         private async Task<string> FindAssetById(string project, string name) {
             string url = _configuration.GetValue<string>("AssetManagerHost") +
                          _configuration.GetValue<string>("GetAssetByProjectName") +
-                         "?project="+project+"&name="+name;
+                         "?project=" + project + "&name=" + name;
 
-            _logger.LogInformation("about to get on "+url);
+            _logger.LogInformation("about to get on " + url);
 
             using (var client = new HttpClient()) {
                 var responseMessage = await client.GetAsync(url);
                 if (responseMessage.StatusCode == HttpStatusCode.OK) {
                     var assetString = await responseMessage.Content.ReadAsStringAsync();
                     if (!string.IsNullOrWhiteSpace(assetString)) {
-                        return assetString.Replace("\"","");
+                        return assetString.Replace("\"", "");
                     }
                 }
             }
@@ -74,7 +89,7 @@ namespace OVE.Service.ImageTiles.Controllers
         [Route("/api/ImageController/GetDZIFile/{id}")]
         public async Task<ActionResult<string>> GetDZIbyId(string id) {
 
-            if ( (await GetAssetStatus(id)) != ProcessingStates.Processed) {
+            if ((await GetAssetStatus(id)) != ProcessingStates.Processed) {
                 return NoContent();
             }
 
@@ -91,9 +106,9 @@ namespace OVE.Service.ImageTiles.Controllers
         private async Task<ProcessingStates> GetAssetStatus(string id) {
             string url = _configuration.GetValue<string>("AssetManagerHost") +
                          _configuration.GetValue<string>("GetAssetByIdApi") +
-                         id+".json";
+                         id + ".json";
 
-            _logger.LogInformation("about to get on "+url);
+            _logger.LogInformation("about to get on " + url);
 
             using (var client = new HttpClient()) {
                 var responseMessage = await client.GetAsync(url);
@@ -117,7 +132,7 @@ namespace OVE.Service.ImageTiles.Controllers
                          _configuration.GetValue<string>("AssetUrlApi") +
                          id;
 
-            _logger.LogInformation("about to get on "+url);
+            _logger.LogInformation("about to get on " + url);
 
             using (var client = new HttpClient()) {
                 var responseMessage = await client.GetAsync(url);
@@ -131,6 +146,5 @@ namespace OVE.Service.ImageTiles.Controllers
 
             return null;
         }
-
     }
 }
