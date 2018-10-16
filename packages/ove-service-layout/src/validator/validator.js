@@ -14,13 +14,13 @@ let requestValidators = {
                 "#.type": {presence: true, isIn: ["container", "section"]},
             }
         }
-    }
+    },
 };
 
 exports.validateRequest = (endpoint = "render", req) => {
     let constraints = requestValidators[endpoint];
     if (constraints) {
-        let errors = validate(req.body, constraints);
+        let errors = validate(req, constraints);
         if (errors) {
             throw errors;
         }

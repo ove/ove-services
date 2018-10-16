@@ -6,7 +6,7 @@ class PercentLayout extends Layout {
     }
 
     render(section, parent) {
-        let params = section['position-constraints'];
+        let params = section.positionConstraints;
 
         section.geometry = {
             x: Math.round(params.x * parent.geometry.w),
@@ -23,11 +23,11 @@ class PercentLayout extends Layout {
     validators() {
         return {
             ...super.validators(),
-            "#.position-constraints.x": {presence: true, isPercent: true},
-            "#.position-constraints.y": {presence: true, isPercent: true},
-            "#.position-constraints.w": {presence: true, isPercent: true},
-            "#.position-constraints.h": {presence: true, isPercent: true},
-        }
+            "#.positionConstraints.x": {presence: true, isPercent: true},
+            "#.positionConstraints.y": {presence: true, isPercent: true},
+            "#.positionConstraints.w": {presence: true, isPercent: true},
+            "#.positionConstraints.h": {presence: true, isPercent: true},
+        };
     }
 }
 

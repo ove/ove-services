@@ -19,7 +19,7 @@ Working example:
           "cols": 16,
           "rows": 4
         },
-        "position-constraints": {
+        "positionConstraints": {
           "x": 10,
           "y": 20,
           "w": 100,
@@ -29,7 +29,7 @@ Working example:
           {
             "name": "section1",
             "type": "section",
-            "position-constraints": {
+            "positionConstraints": {
               "r": 1,
               "c": 1,
               "w": 4,
@@ -63,7 +63,7 @@ Should return:
           "cols": 16,
           "rows": 4
         },
-        "position-constraints": {
+        "positionConstraints": {
           "x": 10,
           "y": 20,
           "w": 100,
@@ -73,7 +73,7 @@ Should return:
           {
             "name": "section1",
             "type": "section",
-            "position-constraints": {
+            "positionConstraints": {
               "r": 1,
               "c": 1,
               "w": 4,

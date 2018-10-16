@@ -1,29 +1,32 @@
-let logger = require('debug')('layout:manager');
+let validate = require("validate.js");
+let {validateRequest} = require("../validator/validator");
+
+let logger = require("debug")("layout:manager");
 
 class LayoutManager {
     constructor() {
-        this.layouts = {}
+        this.layouts = {};
     }
 
     register(layout) {
-        this.layouts[layout.name()] = layout
+        this.layouts[layout.name()] = layout;
     }
 
     getLayout(container) {
         if (container.layout.type) {
             if (this.layouts[container.layout.type]) {
-                return this.layouts[container.layout.type]
+                return this.layouts[container.layout.type];
             } else {
-                throw `Invalid layout == '${container.layout.type}' selected for ${container.name}`
+                throw `Invalid layout == "${container.layout.type}" selected for ${container.name}`;
             }
         } else {
-            throw `Invalid empty layout for ${container.name}`
+            throw `Invalid empty layout for ${container.name}`;
         }
     }
 
-    renderCanvas(canvas, oveLayout) {
+    renderCanvas(body, oveLayout) {
         let result = this.renderContainer({
-            ...canvas,
+            ...body.canvas,
             type: "container",
             name: "canvas",
             geometry: {
@@ -37,9 +40,11 @@ class LayoutManager {
         delete result["name"];
         delete result["type"];
 
-        //todo; do some post validation and raise warnings
+        result = {...body, canvas: result};
 
-        return result
+        postRenderValidation(result);
+
+        return result;
     }
 
     renderContainer(container) {
@@ -49,7 +54,7 @@ class LayoutManager {
             for (let section of container.sections) {
                 let errors = layout.validate(section, container);
                 if (errors) {
-                    throw errors
+                    throw errors;
                 }
 
                 layout.render(section, container);
@@ -78,3 +83,31 @@ function registerAllLayouts() {
 
 exports.layoutManager = manager;
 exports.registerAllLayouts = registerAllLayouts;
+
+//--- Utils
+// Hopefully this never occurs. We cannot test this without breaking valid code
+// istanbul ignore next
+function postRenderValidation(result) {
+    // make sure we did not break anything
+    validateRequest("render", result);
+
+    let errors = validate(result, {
+        "canvas.geometry": {presence: true, isNotEmpty: true},
+        "canvas.geometry.x": {presence: true, isNumber: true},
+        "canvas.geometry.y": {presence: true, isNumber: true},
+        "canvas.geometry.w": {presence: true, isNumber: true},
+        "canvas.geometry.h": {presence: true, isNumber: true},
+        "canvas.sections": {
+            sectionValidator: {
+                "#.geometry": {presence: true, isNotEmpty: false},
+                "#.geometry.x": {presence: true, isNumber: true},
+                "#.geometry.y": {presence: true, isNumber: true},
+                "#.geometry.w": {presence: true, isNumber: true},
+                "#.geometry.h": {presence: true, isNumber: true},
+            }
+        }
+    });
+    if (errors) {
+        throw errors;
+    }
+}

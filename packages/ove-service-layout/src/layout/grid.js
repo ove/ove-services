@@ -6,7 +6,7 @@ class GridLayout extends Layout {
     }
 
     render(section, parent) {
-        let params = section['position-constraints'];
+        let params = section.positionConstraints;
         let cols = parent.layout.cols;
         let rows = parent.layout.rows;
 
@@ -28,11 +28,11 @@ class GridLayout extends Layout {
     validators() {
         return {
             ...super.validators(),
-            "#.position-constraints.r": {presence: true, isNumber: true},
-            "#.position-constraints.c": {presence: true, isNumber: true},
-            "#.position-constraints.w": {presence: true, isNumber: true},
-            "#.position-constraints.h": {presence: true, isNumber: true},
-        }
+            "#.positionConstraints.r": {presence: true, isNumber: true},
+            "#.positionConstraints.c": {presence: true, isNumber: true},
+            "#.positionConstraints.w": {presence: true, isNumber: true},
+            "#.positionConstraints.h": {presence: true, isNumber: true},
+        };
     }
 
     parentValidators() {
@@ -40,7 +40,7 @@ class GridLayout extends Layout {
             ...super.parentValidators(),
             "#.layout.rows": {presence: true, isNumber: true},
             "#.layout.cols": {presence: true, isNumber: true},
-        }
+        };
     }
 }
 

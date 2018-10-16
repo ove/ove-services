@@ -1,4 +1,4 @@
-let fetch = require('node-fetch');
+let fetch = require("node-fetch");
 
 class OveClient {
     constructor() {
@@ -12,8 +12,8 @@ class OveClient {
             let self = this;
             return fetch(url).then(res => res.json()).then(json => {
                 self.cache[url] = json;
-                return json
-            })
+                return json;
+            });
         }
     }
 }

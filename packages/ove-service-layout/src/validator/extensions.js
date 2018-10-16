@@ -14,17 +14,17 @@ validate.validators.oneOf = (value, options) => {
     for (let option of options) {
         error = validate(value, option);
         if (!error) {
-            return null
+            return null;
         }
     }
-    return error ? error : "does not fit all requirements"
+    return error ? error : "does not fit all requirements";
 };
 
 const translateValidator = (options, containers) => {
     let result = {};
     for (let k of Object.keys(options)) {
         for (let container of containers) {
-            result[k.replace("#", container)] = options[k]
+            result[k.replace("#", container)] = options[k];
         }
     }
     return result;
@@ -47,7 +47,7 @@ const sectionValidator = (sections, options) => {
                     }
                 }
             } else {
-                errors.push("One of the sections has an empty or non-string name")
+                errors.push("One of the sections has an empty or non-string name");
             }
         }
     }
@@ -61,16 +61,16 @@ validate.validators.containerValidator = (container) => {
         let errors = [];
 
         if (validate.isEmpty(container.sections)) {
-            errors.push("sections can't be empty for type === 'container'")
+            errors.push("sections can't be empty for type === 'container'");
         }
 
         if (validate.isEmpty(container.layout)) {
-            errors.push("layout can't be empty for type === 'container'")
+            errors.push("layout can't be empty for type === 'container'");
         } else if (validate.isEmpty(container.layout.type) || !validate.isString(container.layout.type)) {
-            errors.push("layout type needs to be a valid non-empty string for type === 'container'")
+            errors.push("layout type needs to be a valid non-empty string for type === 'container'");
         }
 
-        return errors.length > 0 ? errors : null
+        return errors.length > 0 ? errors : null;
     }
 };
 
