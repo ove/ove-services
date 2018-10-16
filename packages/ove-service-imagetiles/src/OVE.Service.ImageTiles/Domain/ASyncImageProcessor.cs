@@ -59,12 +59,7 @@ namespace OVE.Service.ImageTiles.Domain {
         /// 3) Create DZI
         /// 4) Upload it
         /// 5) Mark it as completed
-        /// // todo add logging at intermediate states
-        /// API required:
-        /// 1) process particular asset ID
-        /// 2) get .dzi file for asset ID
-        /// 3) viewer HTML
-        ///
+        /// 
         /// </summary>
         /// <param name="state"></param>
         private async void ProcessImage(object state) {
@@ -88,30 +83,55 @@ namespace OVE.Service.ImageTiles.Domain {
                     // 2) download it
                     string url = await GetAssetUri(asset);
 
-                    string localUri = await DownloadAsset(url,asset);
+                    string localUri = DownloadAsset(url,asset);
 
                     // 3) Create DZI file 
+                    await UpdateStatus(asset, ProcessingStates.CreatingDZI);
                     var res = _processor.ProcessFile(localUri);
                     _logger.LogInformation("Processed file "+res);
 
                     // 4) Upload it
-                    UploadDirectory(localUri,asset);
-                    // 5) Mark it as completed
-                    //todo on http://localhost:8181/OVEAssetModelController/SetProcessingState/a/2/json%20?message=something
-                    // 6) delete local files 
+                    await UpdateStatus(asset, ProcessingStates.Uploading);
+                    await UploadDirectory(localUri,asset);
+                    
+                    // 5) delete local files 
+                    _logger.LogInformation("about to delete files");
                     Directory.Delete(Path.GetDirectoryName(localUri), true);
+
+                    // 6) Mark it as completed            
+                    await UpdateStatus(asset, ProcessingStates.Processed);
                 }
             } catch (Exception e) {
                 
                 _logger.LogError(e, "Exception in Image Processing");
                 if (asset != null) {
-                    // log the error 
-                    //todo
+                    await UpdateStatus(asset,ProcessingStates.Error,e.ToString());
                 }
             } finally {
                 _processing.Release();
             }
 
+        }
+
+        private async Task<bool> UpdateStatus(OVEAssetModel asset, ProcessingStates state, string errors = null) {
+            
+            var url = _configuration.GetValue<string>("AssetManagerHost") +
+                      _configuration.GetValue<string>("SetStateApi") +
+                      asset.Id + "/" + (int) state;
+
+            if (errors != null) {
+                url += "?message=" + Uri.EscapeDataString(errors);
+            }
+            _logger.LogInformation("Setting Asset Status to "+state);
+            using (var client = new HttpClient()) {
+                var responseMessage = await client.PostAsync(url,new StringContent(""));
+                if (responseMessage.StatusCode != HttpStatusCode.OK) {
+                    _logger.LogError("Failed to set asset status "+responseMessage.StatusCode);
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private const string S3ClientAccessKey = "s3Client:AccessKey";
@@ -134,27 +154,29 @@ namespace OVE.Service.ImageTiles.Domain {
         }
 
 
-        private async void UploadDirectory(string file, OVEAssetModel todo) {
-            
+        private async Task<bool> UploadDirectory(string file, OVEAssetModel todo) {
+            _logger.LogInformation("about to upload directory " + file);
+
             using (var fileTransferUtility = new TransferUtility(GetS3Client())) {
-                
+
                 // upload the .dzi file
                 var assetRootFolder = Path.GetDirectoryName(todo.StorageLocation);
 
                 var fileDirectory = Path.ChangeExtension(file, ".dzi").Replace(".dzi", "_files");
 
-                var filesKeyPrefix =  assetRootFolder+ "/"+new DirectoryInfo(fileDirectory).Name + "/"; // upload to the right folder
+                var filesKeyPrefix =
+                    assetRootFolder + "/" + new DirectoryInfo(fileDirectory).Name + "/"; // upload to the right folder
 
                 TransferUtilityUploadRequest req = new TransferUtilityUploadRequest() {
                     BucketName = todo.Project,
-                    Key = Path.ChangeExtension(todo.StorageLocation,".dzi"),
+                    Key = Path.ChangeExtension(todo.StorageLocation, ".dzi"),
                     FilePath = Path.ChangeExtension(file, ".dzi")
-                    
+
                 };
-                fileTransferUtility.Upload(req);
-                await fileTransferUtility.UploadAsync(Path.ChangeExtension(file, ".dzi"), todo.Project);
+                await fileTransferUtility.UploadAsync(req);
+
                 // upload the tile files 
-                
+
                 TransferUtilityUploadDirectoryRequest request =
                     new TransferUtilityUploadDirectoryRequest() {
                         KeyPrefix = filesKeyPrefix,
@@ -165,6 +187,10 @@ namespace OVE.Service.ImageTiles.Domain {
                     };
 
                 await fileTransferUtility.UploadDirectoryAsync(request);
+
+                _logger.LogInformation("finished upload for "+file);
+
+                return true;
             }
         }
 
@@ -181,20 +207,22 @@ namespace OVE.Service.ImageTiles.Domain {
             return filepath;
         }
 
-        private async Task<string> DownloadAsset(string url, OVEAssetModel asset) {
+        private string DownloadAsset(string url, OVEAssetModel asset) {
             // make temp directory
             // download url
 
             string localFile = Path.Combine(GetImagesBasePath(), asset.StorageLocation);
             Directory.CreateDirectory(Path.GetDirectoryName(localFile));
 
-            _logger.LogInformation("About to download to "+localFile);
+            _logger.LogInformation("About to download to " + localFile);
 
             using (var client = new WebClient()) {
-                 client.DownloadFile(new Uri(url),localFile);
+                client.DownloadFile(new Uri(url), localFile);
             }
 
-            return localFile.Replace("/","\\");
+            _logger.LogInformation("Finished downloading to " + localFile);
+
+            return localFile.Replace("/", "\\");
         }
 
         private async Task<string> GetAssetUri(OVEAssetModel asset) {

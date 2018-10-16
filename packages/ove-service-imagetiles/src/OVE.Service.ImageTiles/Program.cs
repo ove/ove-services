@@ -24,6 +24,7 @@ namespace OVE.Service.ImageTiles
             }
 
             return WebHost.CreateDefaultBuilder(args)
+                .UseKestrel(c => c.AddServerHeader = false ) 
                 .UseContentRoot(configBasePath)
                 .UseStartup<Startup>()
                 .ConfigureLogging((hostingContext, logging) => {
