@@ -1,107 +1,63 @@
-# Layout service
+# OVE Layout Service
 
-Working example:
+The Layout Service can be used in addition to the OVE to support more complex layouts,
+other than the absolute coordinates system.
 
-```json
-{
-  "hasVideos": false,
-  "ove-space": "http://localhost:3004/space-info",
-  "canvas": {
-    "layout": {
-      "type": "static"
-    },
-    "sections": [
-      {
-        "name": "container1",
-        "type": "container",
-        "layout": {
-          "type": "grid",
-          "cols": 16,
-          "rows": 4
-        },
-        "positionConstraints": {
-          "x": 10,
-          "y": 20,
-          "w": 100,
-          "h": 200
-        },
-        "sections": [
-          {
-            "name": "section1",
-            "type": "section",
-            "positionConstraints": {
-              "r": 1,
-              "c": 1,
-              "w": 4,
-              "h": 2
-            },
-            "app": {}
-          }
-        ]
-      }
-    ]
-  }
-}
+## Build
+
+This service is a standard npm build, which can be either build with lerna (as per instructions)
+in the Readme file in the root of this repository.
+
+Alternatively, it can be build and run with standard npm, using the package.json.
+
+## Testing & developing
+
+A standard working example is provided in [docs/WORKING_EXAMPLE.md](docs/WORKING_EXAMPLE.md).
+
+Testing this service requires either a working OVE instance or a mocked service. The mocked service
+is available as part of this project. To run it:
+
+```bash
+npm run mockup
 ```
 
-Should return:
+This will spin up a json mockup rest server, exposing the following url: **http://localhost:3004/space-info**
 
-```json
-{
-  "hasVideos": false,
-  "ove-space": "http://localhost:3004/space-info",
-  "canvas": {
-    "layout": {
-      "type": "static"
-    },
-    "sections": [
-      {
-        "name": "container1",
-        "type": "container",
-        "layout": {
-          "type": "grid",
-          "cols": 16,
-          "rows": 4
-        },
-        "positionConstraints": {
-          "x": 10,
-          "y": 20,
-          "w": 100,
-          "h": 200
-        },
-        "sections": [
-          {
-            "name": "section1",
-            "type": "section",
-            "positionConstraints": {
-              "r": 1,
-              "c": 1,
-              "w": 4,
-              "h": 2
-            },
-            "app": {},
-            "geometry": {
-              "x": 16,
-              "y": 70,
-              "w": 25,
-              "h": 100
-            }
-          }
-        ],
-        "geometry": {
-          "x": 10,
-          "y": 20,
-          "w": 100,
-          "h": 200
-        }
-      }
-    ],
-    "geometry": {
-      "x": 0,
-      "y": 0,
-      "w": 30720,
-      "h": 4320
-    }
-  }
-}
+## Available layouts
+
+The layouts and parameters are available in [docs/LAYOUTS.md](docs/LAYOUTS.md)
+
+## Unit tests
+
+```bash
+> npm run coverage
+ 
+ [PASS]  src/layout/manager.test.js
+ [PASS]  src/util.test.js
+ [PASS]  src/layout/static.test.js
+ [PASS]  src/layout/percent.test.js
+ [PASS]  src/layout/grid.test.js
+ 
+ 
+|----------------|----------|----------|----------|----------|-------------------|
+| File           |  % Stmts | % Branch |  % Funcs |  % Lines | Uncovered Line #s |
+|----------------|----------|----------|----------|----------|-------------------|
+| All files      |      100 |      100 |    96.15 |      100 |                   |
+|  src           |      100 |      100 |      100 |      100 |                   |
+|   util.js      |      100 |      100 |      100 |      100 |                   |
+|  src/layout    |      100 |      100 |    95.83 |      100 |                   |
+|   grid.js      |      100 |      100 |      100 |      100 |                   |
+|   layouts.js   |      100 |      100 |     87.5 |      100 |                   |
+|   manager.js   |      100 |      100 |      100 |      100 |                   |
+|   percent.js   |      100 |      100 |      100 |      100 |                   |
+|   static.js    |      100 |      100 |      100 |      100 |                   |
+|  src/test      |      100 |      100 |      100 |      100 |                   |
+|   testUtils.js |      100 |      100 |      100 |      100 |                   |
+|----------------|----------|----------|----------|----------|-------------------|
+
+Test Suites: 5 passed, 5 total
+Tests:       23 passed, 23 total
+Snapshots:   0 total
+Time:        2.052s
+Ran all test suites.
 ```
