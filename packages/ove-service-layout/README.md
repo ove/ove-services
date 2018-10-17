@@ -21,7 +21,7 @@ is available as part of this project. To run it:
 npm run mockup
 ```
 
-This will spin up a json mockup rest server, exposing the following url: **http://localhost:3004/space-info**
+This will spin up a json mockup rest server, exposing the following url: [http://localhost:3004/space-info](http://localhost:3004/space-info).
 
 ## Available layouts
 
