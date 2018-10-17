@@ -20,6 +20,7 @@ app.use(express.json());
 
 app.post("/render", renderRoute);
 
+// eslint-disable-next-line no-unused-vars
 app.use((error, req, res, next) => {
     error = convertError(error);
     logger("error", error);
