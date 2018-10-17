@@ -1,3 +1,6 @@
+// custom validator extensions
+require("./extensions");
+
 const validate = require("validate.js");
 
 let requestValidators = {
@@ -5,7 +8,7 @@ let requestValidators = {
         "ove-space": {presence: true, isString: true},
         "canvas": {presence: true},
         "canvas.layout": {presence: true, isNotEmpty: true},
-        "canvas.layout.type": {presence: true, isString: true},
+        "canvas.layout.type": {presence: true, isNotEmpty: true, isString: true},
         "canvas.sections": {
             presence: true,
             isNotEmpty: true,
@@ -17,7 +20,7 @@ let requestValidators = {
     },
 };
 
-exports.validateRequest = (endpoint = "render", req) => {
+exports.validateRequest = (endpoint, req) => {
     let constraints = requestValidators[endpoint];
     if (constraints) {
         let errors = validate(req, constraints);

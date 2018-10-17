@@ -2,23 +2,11 @@ const validate = require("validate.js");
 
 validate.validators.isIn = (value, options) => options.includes(value) ? null : `should be one of [${options}]`;
 validate.validators.isEqual = (value, options) => options === value ? null : `shouldn't be equal to ${options}`;
-validate.validators.isNotEqual = (value, options) => options === value ? null : `should be equal to ${options}`;
+validate.validators.isNotEqual = (value, options) => options !== value ? null : `shouldn't be equal to ${options}`;
 validate.validators.isNotEmpty = (value) => validate.isEmpty(value) ? `can't be empty` : null;
 validate.validators.isNumber = (value) => validate.isNumber(value) ? null : `should be a number`;
 validate.validators.isPercent = (value) => validate.isNumber(value) && value >= 0 && value <= 1 ? null : `should be between [0, 1]`;
 validate.validators.isString = (value) => validate.isString(value) ? null : `should be a valid string`;
-
-validate.validators.oneOf = (value, options) => {
-    let error;
-
-    for (let option of options) {
-        error = validate(value, option);
-        if (!error) {
-            return null;
-        }
-    }
-    return error ? error : "does not fit all requirements";
-};
 
 const translateValidator = (options, containers) => {
     let result = {};
@@ -57,21 +45,27 @@ const sectionValidator = (sections, options) => {
 validate.validators.sectionValidator = sectionValidator;
 
 validate.validators.containerValidator = (container) => {
+    let errors = [];
     if (container.type === "container") {
-        let errors = [];
-
         if (validate.isEmpty(container.sections)) {
-            errors.push("sections can't be empty for type === 'container'");
+            errors.push("sections are mandatory for containers");
         }
 
         if (validate.isEmpty(container.layout)) {
-            errors.push("layout can't be empty for type === 'container'");
+            errors.push("layout property is mandatory for containers");
         } else if (validate.isEmpty(container.layout.type) || !validate.isString(container.layout.type)) {
-            errors.push("layout type needs to be a valid non-empty string for type === 'container'");
+            errors.push("layout type needs to be a valid non-empty string for containers");
+        }
+    } else if (container.type === "section") {
+        if (container.sections) {
+            errors.push("sections can't have subsections");
         }
 
-        return errors.length > 0 ? errors : null;
+        if (container.layout) {
+            errors.push("sections can't have layouts, please upgrade to container class");
+        }
     }
+    return errors.length > 0 ? errors : null;
 };
 
 exports.translateValidator = translateValidator;

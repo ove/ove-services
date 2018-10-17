@@ -39,7 +39,6 @@ class LayoutManager {
         //delete unused properties
         delete result["name"];
         delete result["type"];
-
         result = {...body, canvas: result};
 
         postRenderValidation(result);

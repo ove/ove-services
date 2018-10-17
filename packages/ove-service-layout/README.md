@@ -12,7 +12,7 @@ Alternatively, it can be build and run with standard npm, using the package.json
 
 ## Testing & developing
 
-A standard working example is provided in [docs/WORKING_EXAMPLE.md](docs/WORKING_EXAMPLE.md).
+A standard working example is provided in the [Working Example](docs/WORKING_EXAMPLE.md) document.
 
 Testing this service requires either a working OVE instance or a mocked service. The mocked service
 is available as part of this project. To run it:
@@ -25,7 +25,7 @@ This will spin up a json mockup rest server, exposing the following url: **http:
 
 ## Available layouts
 
-The layouts and parameters are available in [docs/LAYOUTS.md](docs/LAYOUTS.md)
+The layouts and parameters are available in the [layouts](docs/LAYOUTS.md) document.
 
 ## Unit tests
 
@@ -33,31 +33,35 @@ The layouts and parameters are available in [docs/LAYOUTS.md](docs/LAYOUTS.md)
 > npm run coverage
  
  [PASS]  src/layout/manager.test.js
+ [PASS]  src/layout/grid.test.js
+ [PASS]  src/validator/validator.test.js
+ [PASS]  src/layout/percent.test.js
  [PASS]  src/util.test.js
  [PASS]  src/layout/static.test.js
- [PASS]  src/layout/percent.test.js
- [PASS]  src/layout/grid.test.js
+ [PASS]  src/validator/extensions.test.js
  
- 
-|----------------|----------|----------|----------|----------|-------------------|
-| File           |  % Stmts | % Branch |  % Funcs |  % Lines | Uncovered Line #s |
-|----------------|----------|----------|----------|----------|-------------------|
-| All files      |      100 |      100 |    96.15 |      100 |                   |
-|  src           |      100 |      100 |      100 |      100 |                   |
-|   util.js      |      100 |      100 |      100 |      100 |                   |
-|  src/layout    |      100 |      100 |    95.83 |      100 |                   |
-|   grid.js      |      100 |      100 |      100 |      100 |                   |
-|   layouts.js   |      100 |      100 |     87.5 |      100 |                   |
-|   manager.js   |      100 |      100 |      100 |      100 |                   |
-|   percent.js   |      100 |      100 |      100 |      100 |                   |
-|   static.js    |      100 |      100 |      100 |      100 |                   |
-|  src/test      |      100 |      100 |      100 |      100 |                   |
-|   testUtils.js |      100 |      100 |      100 |      100 |                   |
-|----------------|----------|----------|----------|----------|-------------------|
+|-----------------|----------|----------|----------|----------|-------------------|
+| File            |  % Stmts | % Branch |  % Funcs |  % Lines | Uncovered Line #s |
+|-----------------|----------|----------|----------|----------|-------------------|
+| All files       |      100 |      100 |      100 |      100 |                   |
+|  src            |      100 |      100 |      100 |      100 |                   |
+|   util.js       |      100 |      100 |      100 |      100 |                   |
+|  src/layout     |      100 |      100 |      100 |      100 |                   |
+|   grid.js       |      100 |      100 |      100 |      100 |                   |
+|   layouts.js    |      100 |      100 |      100 |      100 |                   |
+|   manager.js    |      100 |      100 |      100 |      100 |                   |
+|   percent.js    |      100 |      100 |      100 |      100 |                   |
+|   static.js     |      100 |      100 |      100 |      100 |                   |
+|  src/test       |      100 |      100 |      100 |      100 |                   |
+|   testUtils.js  |      100 |      100 |      100 |      100 |                   |
+|  src/validator  |      100 |      100 |      100 |      100 |                   |
+|   extensions.js |      100 |      100 |      100 |      100 |                   |
+|   validator.js  |      100 |      100 |      100 |      100 |                   |
+|-----------------|----------|----------|----------|----------|-------------------|
 
-Test Suites: 5 passed, 5 total
-Tests:       23 passed, 23 total
+Test Suites: 7 passed, 7 total
+Tests:       35 passed, 35 total
 Snapshots:   0 total
-Time:        2.052s
+Time:        1.899s
 Ran all test suites.
 ```

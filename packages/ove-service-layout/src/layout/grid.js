@@ -6,6 +6,8 @@ class GridLayout extends Layout {
     }
 
     render(section, parent) {
+        super.render(section, parent);
+
         let params = section.positionConstraints;
         let cols = parent.layout.cols;
         let rows = parent.layout.rows;

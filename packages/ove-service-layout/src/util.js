@@ -8,3 +8,16 @@ exports.normalizePort = function (val) {
 
     return false;
 };
+
+exports.convertError = function (error) {
+    let result;
+    if (error.message) {
+        error = error.message;
+    }
+    if (Array.isArray(error)) {
+        result = {errors: error};
+    } else {
+        result = {errors: [error]};
+    }
+    return result;
+};

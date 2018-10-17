@@ -6,6 +6,8 @@ class StaticLayout extends Layout {
     }
 
     render(section, parent) {
+        super.render(section, parent);
+
         copyAndShiftCoordinates(parent, section, "x");
         copyAndShiftCoordinates(parent, section, "y");
         copyCoordinates(section, "w");

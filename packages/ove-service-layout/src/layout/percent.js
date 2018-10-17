@@ -6,6 +6,8 @@ class PercentLayout extends Layout {
     }
 
     render(section, parent) {
+        super.render(section, parent);
+
         let params = section.positionConstraints;
 
         section.geometry = {

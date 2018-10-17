@@ -8,7 +8,7 @@ let logger = require("debug")("layout:app");
 let express = require("express");
 let app = express();
 
-let {normalizePort} = require("./util");
+let {normalizePort, convertError} = require("./util");
 
 let {renderRoute} = require("./routes/render");
 
@@ -19,6 +19,12 @@ app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
 app.post("/render", renderRoute);
+
+app.use((error, req, res, next) => {
+    error = convertError(error);
+    logger("error", error);
+    res.status(500).json(error);
+});
 
 let port = normalizePort(process.env.PORT || "3000");
 app.listen(port, () => logger(`Listening on port ${port}!`));

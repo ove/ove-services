@@ -45,8 +45,7 @@
       "src/**.js",
       "!src/.eslintrc.js",
       "!src/index.js",
-      "!src/routes/**.js",
-      "!src/validator/**.js"
+      "!src/routes/**.js"
     ]
   }
 }
