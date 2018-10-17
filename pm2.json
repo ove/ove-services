@@ -1,17 +1,6 @@
 {
   "apps": [
     {
-      "name": "@ove/ove-service-imagetiles",
-      "cwd": "./packages/ove-service-imagetiles",
-      "kill_timeout": 3000,
-      "restart_delay": 3000,
-      "script": "npm",
-      "args": "run start",
-      "env": {
-          "PORT": "8181"
-      }
-    },
-    {
       "name": "@ove/ove-service-layout",
       "cwd": "./packages/ove-service-layout",
       "kill_timeout": 3000,
