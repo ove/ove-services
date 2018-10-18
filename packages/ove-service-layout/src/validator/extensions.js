@@ -62,7 +62,7 @@ validate.validators.containerValidator = (container) => {
         }
 
         if (container.layout) {
-            errors.push("sections can't have layouts, please upgrade to container class");
+            errors.push("sections can't have layouts: please use a container class instead");
         }
     }
     return errors.length > 0 ? errors : null;
