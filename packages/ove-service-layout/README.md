@@ -2,7 +2,7 @@
 
 ![Jest coverage](docs/img/badge-lines.svg) ![node - latest](https://img.shields.io/node/v/@stdlib/stdlib/latest.svg) ![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)
 
-The Layout Service can be used in addition to the OVE to support more complex layouts,
+The Layout Service can be used to support OVE with more complex layouts,
 other than the absolute coordinates system.
 
 ## Build
