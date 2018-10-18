@@ -1,5 +1,7 @@
 # OVE Layout Service
 
+![Jest coverage](docs/img/badge-lines.svg) ![node - latest](https://img.shields.io/node/v/@stdlib/stdlib/latest.svg) ![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)
+
 The Layout Service can be used in addition to the OVE to support more complex layouts,
 other than the absolute coordinates system.
 
@@ -18,7 +20,7 @@ Testing this service requires either a working OVE instance or a mocked service.
 is available as part of this project. To run it:
 
 ```bash
-npm run mockup
+npm run start:mockup
 ```
 
 This will spin up a json mockup rest server, exposing the following url: [http://localhost:3004/space-info](http://localhost:3004/space-info).
