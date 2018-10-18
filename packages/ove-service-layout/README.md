@@ -7,7 +7,7 @@ apart from the absolute coordinates system.
 
 ## Build
 
-This service is a standard npm build, which can be either build with lerna (as per instructions)
+This service requires a standard npm build, which can be built with lerna (as per instructions)
 in the Readme file in the root of this repository.
 
 Alternatively, it can be build and run with standard npm, using the package.json.
