@@ -1,22 +1,24 @@
-let {convertError} = require("../util");
+const HttpStatus = require("http-status-codes");
 
-let {validateRequest} = require("../validator/validator");
-let {layoutManager} = require("../layout/manager");
+const {convertError} = require("../util");
 
-let logger = require("debug")("layout:render");
+const {validateRequest} = require("../validator/validator");
+const {layoutManager} = require("../layout/manager");
 
-let {oveClient} = require("../routes/ove");
+const logger = require("debug")("layout:render");
+
+const {oveClient} = require("../routes/ove");
 
 exports.renderRoute = (req, res) => {
     validateRequest("render", req.body);
 
     logger("Request", req.body);
 
-    oveClient.getConfiguration(req.body["ove-space"]).then(config => {
-        res.status(200).json(layoutManager.renderCanvas(req.body, config.geometry));
+    oveClient.getConfiguration(req.body["oveSpace"]).then(config => {
+        res.status(HttpStatus.OK).json(layoutManager.renderCanvas(req.body, config.geometry));
     }).catch(error => {
         error = convertError(error);
         logger("error", error);
-        res.status(500).json(error);
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(error);
     });
 };

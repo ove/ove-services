@@ -3,16 +3,18 @@
 // custom validator extensions
 require("./validator/extensions");
 
-let logger = require("debug")("layout:app");
+const HttpStatus = require("http-status-codes");
 
-let express = require("express");
-let app = express();
+const logger = require("debug")("layout:app");
 
-let {normalizePort, convertError} = require("./util");
+const express = require("express");
+const app = express();
 
-let {renderRoute} = require("./routes/render");
+const {normalizePort, convertError} = require("./util");
 
-let {registerAllLayouts} = require("./layout/manager");
+const {renderRoute} = require("./routes/render");
+
+const {registerAllLayouts} = require("./layout/manager");
 registerAllLayouts();
 
 app.use(express.urlencoded({extended: true}));
@@ -24,8 +26,8 @@ app.post("/render", renderRoute);
 app.use((error, req, res, next) => {
     error = convertError(error);
     logger("error", error);
-    res.status(500).json(error);
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(error);
 });
 
-let port = normalizePort(process.env.PORT || "3000");
+const port = normalizePort(process.env.PORT || "3000");
 app.listen(port, () => logger(`Listening on port ${port}!`));

@@ -6,8 +6,8 @@ test("Invalid request path", () => {
 
 test("Valid request", () => {
     expect(() => validateRequest("render", {
-        "hasVideos": false,
-        "ove-space": "http://localhost/",
+
+        "oveSpace": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -48,8 +48,8 @@ test("Valid request", () => {
 
 test("Invalid request - empty sections", () => {
     expect(() => validateRequest("render", {
-        "hasVideos": false,
-        "ove-space": "http://localhost/",
+
+        "oveSpace": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -59,8 +59,8 @@ test("Invalid request - empty sections", () => {
     })).toThrow();
 
     expect(() => validateRequest("render", {
-        "hasVideos": false,
-        "ove-space": "http://localhost/",
+
+        "oveSpace": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -71,8 +71,8 @@ test("Invalid request - empty sections", () => {
 
 test("Invalid request - empty layout on canvas", () => {
     expect(() => validateRequest("render", {
-        "hasVideos": false,
-        "ove-space": "http://localhost/",
+
+        "oveSpace": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": ""
@@ -94,11 +94,10 @@ test("Invalid request - empty layout on canvas", () => {
     })).toThrow();
 
     expect(() => validateRequest("render", {
-        "hasVideos": false,
-        "ove-space": "http://localhost/",
+
+        "oveSpace": "http://localhost/",
         "canvas": {
-            "layout": {
-            },
+            "layout": {},
             "sections": [
                 {
                     "name": "section1",
@@ -116,8 +115,8 @@ test("Invalid request - empty layout on canvas", () => {
     })).toThrow();
 
     expect(() => validateRequest("render", {
-        "hasVideos": false,
-        "ove-space": "http://localhost/",
+
+        "oveSpace": "http://localhost/",
         "canvas": {
             "sections": [
                 {
@@ -138,8 +137,8 @@ test("Invalid request - empty layout on canvas", () => {
 
 test("Invalid request - empty layout on container", () => {
     expect(() => validateRequest("render", {
-        "hasVideos": false,
-        "ove-space": "http://localhost/",
+
+        "oveSpace": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -176,8 +175,8 @@ test("Invalid request - empty layout on container", () => {
     })).toThrow();
 
     expect(() => validateRequest("render", {
-        "hasVideos": false,
-        "ove-space": "http://localhost/",
+
+        "oveSpace": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -186,8 +185,7 @@ test("Invalid request - empty layout on container", () => {
                 {
                     "name": "container1",
                     "type": "container",
-                    "layout": {
-                    },
+                    "layout": {},
                     "positionConstraints": {
                         "x": 10,
                         "y": 20,
@@ -213,8 +211,8 @@ test("Invalid request - empty layout on container", () => {
     })).toThrow();
 
     expect(() => validateRequest("render", {
-        "hasVideos": false,
-        "ove-space": "http://localhost/",
+
+        "oveSpace": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -250,8 +248,8 @@ test("Invalid request - empty layout on container", () => {
 
 test("Invalid request - empty sections on container", () => {
     expect(() => validateRequest("render", {
-        "hasVideos": false,
-        "ove-space": "http://localhost/",
+
+        "oveSpace": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -269,16 +267,15 @@ test("Invalid request - empty sections on container", () => {
                         "w": 100,
                         "h": 200
                     },
-                    "sections": [
-                    ]
+                    "sections": []
                 }
             ]
         }
     })).toThrow();
 
     expect(() => validateRequest("render", {
-        "hasVideos": false,
-        "ove-space": "http://localhost/",
+
+        "oveSpace": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -304,8 +301,8 @@ test("Invalid request - empty sections on container", () => {
 
 test("Invalid request - sections with layouts", () => {
     expect(() => validateRequest("render", {
-        "hasVideos": false,
-        "ove-space": "http://localhost/",
+
+        "oveSpace": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -332,8 +329,8 @@ test("Invalid request - sections with layouts", () => {
 
 test("Invalid request - sections with sections", () => {
     expect(() => validateRequest("render", {
-        "hasVideos": false,
-        "ove-space": "http://localhost/",
+
+        "oveSpace": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -358,8 +355,7 @@ test("Invalid request - sections with sections", () => {
 
 test("Invalid request - empty name", () => {
     expect(() => validateRequest("render", {
-        "hasVideos": false,
-        "ove-space": "http://localhost/",
+        "oveSpace": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -382,8 +378,7 @@ test("Invalid request - empty name", () => {
     })).toThrow();
 
     expect(() => validateRequest("render", {
-        "hasVideos": false,
-        "ove-space": "http://localhost/",
+        "oveSpace": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"

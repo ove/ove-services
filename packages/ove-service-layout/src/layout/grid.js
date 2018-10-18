@@ -8,12 +8,12 @@ class GridLayout extends Layout {
     render(section, parent) {
         super.render(section, parent);
 
-        let params = section.positionConstraints;
-        let cols = parent.layout.cols;
-        let rows = parent.layout.rows;
+        const params = section.positionConstraints;
+        const cols = parent.layout.cols;
+        const rows = parent.layout.rows;
 
-        let cellWidth = parent.geometry.w / cols;
-        let cellHeight = parent.geometry.h / rows;
+        const cellWidth = parent.geometry.w / cols;
+        const cellHeight = parent.geometry.h / rows;
 
         section.geometry = {
             x: Math.round(params.c * cellWidth),

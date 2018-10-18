@@ -5,7 +5,7 @@ validate.validators.isEqual = (value, options) => options === value ? null : `sh
 validate.validators.isNotEqual = (value, options) => options !== value ? null : `shouldn't be equal to ${options}`;
 validate.validators.isNotEmpty = (value) => validate.isEmpty(value) ? `can't be empty` : null;
 validate.validators.isNumber = (value) => validate.isNumber(value) ? null : `should be a number`;
-validate.validators.isPercent = (value) => validate.isNumber(value) && value >= 0 && value <= 1 ? null : `should be between [0, 1]`;
+validate.validators.isPercent = (value) => validate.isNumber(value) && value >= 0 && value <= 100 ? null : `should be between [0, 100]`;
 validate.validators.isString = (value) => validate.isString(value) ? null : `should be a valid string`;
 
 const translateValidator = (options, containers) => {

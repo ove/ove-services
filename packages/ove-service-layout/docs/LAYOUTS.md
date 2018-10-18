@@ -30,7 +30,7 @@ container.section.geometry.x = 80
 - w: percent of the parent width, **percent**, **required**
 - h: percent of the parent height, **percent**, **required**
 
-**Note:** All percent parameters are between \[0, 1\]
+**Note:** All percent parameters are between \[0, 100\]
 
 ## Grid
 

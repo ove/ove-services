@@ -32,7 +32,7 @@ The layouts and parameters are available in the [layouts](docs/LAYOUTS.md) docum
 ## Unit tests
 
 ```bash
-> npm run coverage
+> npm run test:coverage
  
  [PASS]  src/layout/manager.test.js
  [PASS]  src/layout/grid.test.js

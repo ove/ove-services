@@ -1,7 +1,7 @@
-let validate = require("validate.js");
-let {validateRequest} = require("../validator/validator");
+const validate = require("validate.js");
+const {validateRequest} = require("../validator/validator");
 
-let logger = require("debug")("layout:manager");
+const logger = require("debug")("layout:manager");
 
 class LayoutManager {
     constructor() {

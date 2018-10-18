@@ -1,4 +1,4 @@
-let {normalizePort, convertError} = require("./util");
+const {normalizePort, convertError} = require("./util");
 
 test("Normalize ports", () => {
     expect(normalizePort(123)).toBe(123);

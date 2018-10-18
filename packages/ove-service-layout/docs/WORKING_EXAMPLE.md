@@ -2,8 +2,7 @@
 
 ```json
 {
-  "hasVideos": false,
-  "ove-space": "http://localhost:3004/space-info",
+  "oveSpace": "http://localhost:3004/space-info",
   "canvas": {
     "layout": {
       "type": "static"
@@ -45,9 +44,8 @@
 Should return:
 
 ```json
-{
-  "hasVideos": false,
-  "ove-space": "http://localhost:3004/space-info",
+{  
+  "oveSpace": "http://localhost:3004/space-info",
   "canvas": {
     "layout": {
       "type": "static"

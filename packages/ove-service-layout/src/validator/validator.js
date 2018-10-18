@@ -5,7 +5,7 @@ const validate = require("validate.js");
 
 let requestValidators = {
     render: {
-        "ove-space": {presence: true, isString: true},
+        "oveSpace": {presence: true, isString: true},
         "canvas": {presence: true},
         "canvas.layout": {presence: true, isNotEmpty: true},
         "canvas.layout.type": {presence: true, isNotEmpty: true, isString: true},

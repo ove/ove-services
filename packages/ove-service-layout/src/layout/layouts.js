@@ -55,13 +55,13 @@ exports.shiftCoordinates = function (parent, section, field) {
 };
 
 exports.copyAndShiftCoordinates = function (parent, section, field) {
-    let params = section.positionConstraints;
+    const params = section.positionConstraints;
     initGeometry(section);
     section.geometry[field] = params[field] + parent.geometry[field];
 };
 
 exports.copyCoordinates = function (section, field) {
-    let params = section.positionConstraints;
+    const params = section.positionConstraints;
     initGeometry(section);
     section.geometry[field] = params[field];
 };

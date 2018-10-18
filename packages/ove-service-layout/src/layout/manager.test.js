@@ -12,8 +12,7 @@ test("Render valid", () => {
     let oveSpace = {x: 0, y: 0, w: 100, h: 100};
 
     let body = {
-        "hasVideos": false,
-        "ove-space": "http://localhost:3004/space-info",
+        "oveSpace": "http://localhost:3004/space-info",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -58,8 +57,7 @@ test("Render invalid - invalid container type", () => {
     let oveSpace = {x: 0, y: 0, w: 100, h: 100};
 
     let body = {
-        "hasVideos": false,
-        "ove-space": "http://localhost:3004/space-info",
+        "oveSpace": "http://localhost:3004/space-info",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -103,8 +101,7 @@ test("Render invalid - invalid section type", () => {
     let oveSpace = {x: 0, y: 0, w: 100, h: 100};
 
     let body = {
-        "hasVideos": false,
-        "ove-space": "http://localhost:3004/space-info",
+        "oveSpace": "http://localhost:3004/space-info",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -148,8 +145,7 @@ test("Render invalid - invalid container types", () => {
     let oveSpace = {x: 0, y: 0, w: 100, h: 100};
 
     let body = {
-        "hasVideos": false,
-        "ove-space": "http://localhost:3004/space-info",
+        "oveSpace": "http://localhost:3004/space-info",
         "canvas": {
             "layout": {
                 "type": "unknown"
@@ -189,8 +185,7 @@ test("Render invalid - invalid container types", () => {
     expect(() => layoutManager.renderCanvas(body, oveSpace)).toThrow();
 
     body = {
-        "hasVideos": false,
-        "ove-space": "http://localhost:3004/space-info",
+        "oveSpace": "http://localhost:3004/space-info",
         "canvas": {
             "layout": {
                 "type": null
@@ -234,8 +229,7 @@ test("Render invalid - section error", () => {
     let oveSpace = {x: 0, y: 0, w: 100, h: 100};
 
     let body = {
-        "hasVideos": false,
-        "ove-space": "http://localhost:3004/space-info",
+        "oveSpace": "http://localhost:3004/space-info",
         "canvas": {
             "layout": {
                 "type": "static"

@@ -8,18 +8,18 @@ class PercentLayout extends Layout {
     render(section, parent) {
         super.render(section, parent);
 
-        let params = section.positionConstraints;
+        const params = section.positionConstraints;
 
         section.geometry = {
-            x: Math.round(params.x * parent.geometry.w),
-            y: Math.round(params.y * parent.geometry.h)
+            x: Math.round(params.x * parent.geometry.w / 100),
+            y: Math.round(params.y * parent.geometry.h / 100)
         };
 
         shiftCoordinates(parent, section, "x");
         shiftCoordinates(parent, section, "y");
 
-        section.geometry.w = Math.round(params.w * parent.geometry.w);
-        section.geometry.h = Math.round(params.h * parent.geometry.h);
+        section.geometry.w = Math.round(params.w * parent.geometry.w / 100);
+        section.geometry.h = Math.round(params.h * parent.geometry.h / 100);
     }
 
     validators() {

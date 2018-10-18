@@ -1,8 +1,8 @@
 const {StaticLayout} = require("./static");
 
-let layout = new StaticLayout();
+const layout = new StaticLayout();
 
-let {renderAndTestSomeConstraints} = require("../test/testUtils");
+const {renderAndTestSomeConstraints} = require("../test/testUtils");
 
 test("Name", () => {
     expect(layout.name()).toBe("static");
@@ -27,7 +27,7 @@ test("Layouts with missing bits", () => {
 });
 
 test("Rendering", () => {
-    let parent = {geometry: {x: 0, y: 0, w: 100, h: 100}};
+    const parent = {geometry: {x: 0, y: 0, w: 100, h: 100}};
 
     renderAndTestSomeConstraints(layout, parent,
         {positionConstraints: {x: 0, y: 0, w: 50, h: 50}},
@@ -36,7 +36,7 @@ test("Rendering", () => {
 });
 
 test("Rendering - shifted", () => {
-    let parent = {geometry: {x: 10, y: 20, w: 100, h: 100}};
+    const parent = {geometry: {x: 10, y: 20, w: 100, h: 100}};
 
     renderAndTestSomeConstraints(layout, parent,
         {positionConstraints: {x: 0, y: 0, w: 50, h: 50}},
