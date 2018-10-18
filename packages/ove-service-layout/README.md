@@ -8,7 +8,7 @@ apart from the absolute coordinates system.
 ## Build
 
 This service requires a standard npm build, which can be built with lerna (as per instructions)
-in the Readme file in the root of this repository.
+in the README.md file found in the root of this repository.
 
 Alternatively, it can be build and run with standard npm, using the package.json.
 
