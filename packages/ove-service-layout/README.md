@@ -2,15 +2,15 @@
 
 ![Jest coverage](docs/img/badge-lines.svg) ![node - latest](https://img.shields.io/node/v/@stdlib/stdlib/latest.svg) ![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)
 
-The Layout Service can be used in addition to the OVE to support more complex layouts,
-other than the absolute coordinates system.
+The Layout Service can be used to support OVE with more complex layouts,
+apart from the absolute coordinates system.
 
 ## Build
 
-This service is a standard npm build, which can be either build with lerna (as per instructions)
-in the Readme file in the root of this repository.
+This service requires a standard npm build, which can be built with lerna (as per instructions)
+in the README.md file found in the root of this repository.
 
-Alternatively, it can be build and run with standard npm, using the package.json.
+Alternatively, it can be built and run with standard npm, using the package.json.
 
 ## Testing & developing
 
