@@ -65,3 +65,5 @@ Snapshots:   0 total
 Time:        1.899s
 Ran all test suites.
 ```
+
+**Note:** All the rest endpoints are not covered by the jest tests.
