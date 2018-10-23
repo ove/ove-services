@@ -1,3 +1,5 @@
+const validate = require("validate.js");
+
 exports.normalizePort = function (val) {
     let port = parseInt(val, 10);
 
@@ -20,4 +22,20 @@ exports.convertError = function (error) {
         result = {errors: [error]};
     }
     return result;
+};
+
+exports.getName = function (section) {
+    if (!validate.isEmpty(section.name)) {
+        if (validate.isString(section.name)) {
+            return section.name;
+        } else if (validate.isNumber(section.name)) {
+            return section.name.toString();
+        } else {
+            return "anonymous object";
+        }
+    } else if (!validate.isEmpty(section.sections)) {
+        return "anonymous container";
+    } else {
+        return "anonymous section";
+    }
 };

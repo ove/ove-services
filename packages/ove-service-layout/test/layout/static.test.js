@@ -1,8 +1,8 @@
-const {StaticLayout} = require("./static");
+const {StaticLayout} = require("../../src/layout/static");
 
 const layout = new StaticLayout();
 
-const {renderAndTestSomeConstraints} = require("../test/testUtils");
+const {renderAndTestSomeConstraints} = require("../testUtils");
 
 test("Name", () => {
     expect(layout.name()).toBe("static");

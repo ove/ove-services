@@ -1,4 +1,5 @@
 const validate = require("validate.js");
+const {getName} = require("../util");
 const {validateRequest} = require("../validator/validator");
 
 const logger = require("debug")("layout:manager");
@@ -17,10 +18,10 @@ class LayoutManager {
             if (this.layouts[container.layout.type]) {
                 return this.layouts[container.layout.type];
             } else {
-                throw `Invalid layout == "${container.layout.type}" selected for ${container.name}`;
+                throw `Invalid layout == "${container.layout.type}" selected for ${getName(container)}`;
             }
         } else {
-            throw `Invalid empty layout for ${container.name}`;
+            throw `Invalid empty layout for ${getName(container)}`;
         }
     }
 
@@ -49,7 +50,7 @@ class LayoutManager {
     renderContainer(container) {
         if (container.type === "container") {
             let layout = this.getLayout(container);
-            logger(`Layout selected ${layout.name()} for ${container.name}`);
+            logger(`Layout selected ${layout.name()} for ${getName(container)}`);
             for (let section of container.sections) {
                 let errors = layout.validate(section, container);
                 if (errors) {

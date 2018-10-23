@@ -1,5 +1,7 @@
 const validate = require("validate.js");
 
+const {getName} = require("../util");
+
 validate.validators.isIn = (value, options) => options.includes(value) ? null : `should be one of [${options}]`;
 validate.validators.isEqual = (value, options) => options === value ? null : `shouldn't be equal to ${options}`;
 validate.validators.isNotEqual = (value, options) => options !== value ? null : `shouldn't be equal to ${options}`;
@@ -22,20 +24,16 @@ const sectionValidator = (sections, options) => {
     let errors = [];
     if (sections) {
         for (let section of sections) {
-            if (!validate.isEmpty(section.name) && validate.isString(section.name)) {
-                let vErrors = validate({[section.name]: section}, translateValidator(options, [section.name]));
-                if (vErrors) {
-                    errors = [...errors, vErrors];
-                }
+            let vErrors = validate({[getName(section)]: section}, translateValidator(options, [getName(section)]));
+            if (vErrors) {
+                errors = [...errors, vErrors];
+            }
 
-                if (section.type === "container" && !validate.isEmpty(section.sections)) {
-                    vErrors = sectionValidator(section.sections, options);
-                    if (vErrors) {
-                        errors = [...errors, ...vErrors];
-                    }
+            if (section.type === "container" && !validate.isEmpty(section.sections)) {
+                vErrors = sectionValidator(section.sections, options);
+                if (vErrors) {
+                    errors = [...errors, ...vErrors];
                 }
-            } else {
-                errors.push("One of the sections has an empty or non-string name");
             }
         }
     }

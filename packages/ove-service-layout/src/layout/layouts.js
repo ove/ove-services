@@ -1,4 +1,5 @@
 const validate = require("validate.js");
+const {getName} = require("../util");
 const {translateValidator} = require("../validator/extensions");
 
 class Layout {
@@ -26,10 +27,10 @@ class Layout {
 
     validate(section, parent) {
         let errors = {};
-        let vErrors = validate({[section.name]: section}, translateValidator(this.validators(), [section.name]));
+        let vErrors = validate({[getName(section)]: section}, translateValidator(this.validators(), [getName(section)]));
         vErrors && (errors = {...errors, ...vErrors});
 
-        vErrors = validate({[parent.name]: parent}, translateValidator(this.parentValidators(), [parent.name]));
+        vErrors = validate({[getName(parent)]: parent}, translateValidator(this.parentValidators(), [getName(parent)]));
         vErrors && (errors = {...errors, ...vErrors});
 
         return validate.isEmpty(errors) ? null : errors;

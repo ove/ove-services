@@ -1,8 +1,8 @@
-const {PercentLayout} = require("./percent");
+const {PercentLayout} = require("../../src/layout/percent");
 
 const layout = new PercentLayout();
 
-const {renderAndTestSomeConstraints} = require("../test/testUtils");
+const {renderAndTestSomeConstraints} = require("../testUtils");
 
 test("Name", () => {
     expect(layout.name()).toBe("percent");
