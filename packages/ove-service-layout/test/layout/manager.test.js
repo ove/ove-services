@@ -1,4 +1,4 @@
-const {layoutManager, registerAllLayouts} = require("./manager");
+const {layoutManager, registerAllLayouts} = require("../../src/layout/manager");
 
 registerAllLayouts();
 

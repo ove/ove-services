@@ -1,8 +1,8 @@
-const {GridLayout} = require("./grid");
+const {GridLayout} = require("../../src/layout/grid");
 
 const layout = new GridLayout();
 
-const {renderAndTestSomeConstraints} = require("../test/testUtils");
+const {renderAndTestSomeConstraints} = require("../../src/test/testUtils");
 
 test("Name", () => {
     expect(layout.name()).toBe("grid");

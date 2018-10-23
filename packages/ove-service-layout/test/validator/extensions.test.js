@@ -1,5 +1,5 @@
 // custom validator extensions
-require("./extensions");
+require("../../src/validator/extensions");
 
 const validate = require("validate.js");
 

@@ -1,4 +1,4 @@
-const {validateRequest} = require("./validator");
+const {validateRequest} = require("../../src/validator/validator");
 
 test("Invalid request path", () => {
     expect(() => validateRequest("invalid", {})).not.toThrow();
