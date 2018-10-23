@@ -1,4 +1,15 @@
 {
   "apps": [
+    {
+      "name": "@ove/ove-service-layout",
+      "cwd": "./packages/ove-service-layout",
+      "kill_timeout": 3000,
+      "restart_delay": 3000,
+      "script": "dist/index.js",
+      "env": {
+          "PORT": "8186"
+      }
+    }
   ]
 }
+
