@@ -5,7 +5,18 @@ const validate = require("validate.js");
 
 let requestValidators = {
     render: {
-        "oveSpace": {presence: true, isString: true},
+        "oveSpace": {
+            presence: true, objectValidator: {
+                single: {url: {allowLocal: true}},
+                object: {
+                    "geometry": {presence: true, isNotEmpty: true},
+                    "geometry.x": {presence: true, isNumber: true},
+                    "geometry.y": {presence: true, isNumber: true},
+                    "geometry.w": {presence: true, isNumber: true},
+                    "geometry.h": {presence: true, isNumber: true}
+                }
+            }
+        },
         "canvas": {presence: true},
         "canvas.layout": {presence: true, isNotEmpty: true},
         "canvas.layout.type": {presence: true, isNotEmpty: true, isString: true},
@@ -18,6 +29,13 @@ let requestValidators = {
             }
         }
     },
+    oveResponse: {
+        "geometry": {presence: true, isNotEmpty: true},
+        "geometry.x": {presence: true, isNumber: true},
+        "geometry.y": {presence: true, isNumber: true},
+        "geometry.w": {presence: true, isNumber: true},
+        "geometry.h": {presence: true, isNumber: true}
+    }
 };
 
 exports.validateRequest = (endpoint, req) => {

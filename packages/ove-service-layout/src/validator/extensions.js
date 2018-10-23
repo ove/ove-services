@@ -10,6 +10,14 @@ validate.validators.isNumber = (value) => validate.isNumber(value) ? null : `sho
 validate.validators.isPercent = (value) => validate.isNumber(value) && value >= 0 && value <= 100 ? null : `should be between [0, 100]`;
 validate.validators.isString = (value) => validate.isString(value) ? null : `should be a valid string`;
 
+validate.validators.objectValidator = (value, options) => {
+    if (validate.isObject(value)) {
+        return validate.validate(value, options.object);
+    } else {
+        return validate.single(value, options.single);
+    }
+};
+
 const translateValidator = (options, containers) => {
     let result = {};
     for (let k of Object.keys(options)) {
