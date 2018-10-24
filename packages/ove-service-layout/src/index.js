@@ -4,6 +4,7 @@
 require("./validator/extensions");
 
 const HttpStatus = require("http-status-codes");
+const cors = require('cors');
 
 const logger = require("debug")("layout:app");
 
@@ -17,6 +18,7 @@ const {renderRoute} = require("./routes/render");
 const {registerAllLayouts} = require("./layout/manager");
 registerAllLayouts();
 
+app.use(cors());
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
@@ -25,7 +27,7 @@ app.post("/render", renderRoute);
 // eslint-disable-next-line no-unused-vars
 app.use((error, req, res, next) => {
     error = convertError(error);
-    logger("error", error);
+    logger("error", JSON.stringify(error), "for request", JSON.stringify(req.body));
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(error);
 });
 

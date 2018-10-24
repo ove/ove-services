@@ -18,7 +18,7 @@ exports.renderRoute = (req, res) => {
         res.status(HttpStatus.OK).json(layoutManager.renderCanvas(req.body, config.geometry));
     }).catch(error => {
         error = convertError(error);
-        logger("error", error);
+        logger("error", JSON.stringify(error), "for request", JSON.stringify(req.body));
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(error);
     });
 };
