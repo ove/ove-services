@@ -19,6 +19,7 @@
     "start:mockup": "json-server --watch mockup/routes.json --port 3004",
     "clean": "npx rimraf dist",
     "build": "npx babel-cli src --out-dir dist",
+    "build:clean": "npm run clean && npm run build",
     "lint": "eslint src/**",
     "test": "jest",
     "test:coverage": "jest --coverage",
