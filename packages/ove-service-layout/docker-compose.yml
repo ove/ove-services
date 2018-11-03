@@ -1,0 +1,7 @@
+version: '3'
+services:
+  ovehub-ove-service-layout:
+    image: ovehub/ove-service-layout:${SERVICE_VERSION}
+    build: .
+    ports:
+    - "8080:8080"
