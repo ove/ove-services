@@ -38,28 +38,4 @@ Build and start runtime:
 
 ## Docker
 
-Alternatively, you can use docker:
-
-```sh
-docker build -t ove-services -f Dockerfile .
-docker run -d -p 8181-8190:8181-8190 --name ove-services ove-services
-```
-
-The services are now running in the port range of 8181 to 8190 on localhost.
-
-### Development
-
-If you are a developer who has made changes to your local copy of OVE services, and want to quickly rebuild it without rebuilding the docker container, you can run a container and mount the code as a volume:
-
-```sh
-cd /some/path/to/ove-services
-docker run -it -p 8181-8190:8181-8190 -v $PWD:/code ove-services bash
-```
-
-and then, inside the container, run:
-
-```sh
-cd /code
-lerna bootstrap --hoist && lerna run clean && lerna run build
-pm2 start pm2.json
-```
+Each service has a docker image which can be built and configured individually. Please follow the guide for each service.

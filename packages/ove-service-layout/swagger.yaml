@@ -1,0 +1,184 @@
+openapi: 3.0.0
+info:
+  description: "OVE (Open Visualisation Environment) is an open-source software stack, designed to be used in large scale visualisation environments like the [Imperial College](http://www.imperial.ac.uk) [Data Science Institute's](http://www.imperial.ac.uk/data-science/) [Data Observatory](http://www.imperial.ac.uk/data-science/data-observatory/). The OVE Layout Service provides functionality for various layouts to be rendered by OVE."
+  version: "0.1.0"
+  title: "OVE Layout Service"
+  contact:
+    email: "Ovidiu Serban, o.serban@imperial.ac.uk"
+  license:
+    name: "MIT License"
+    url: "https://raw.githubusercontent.com/ove/ove-services/master/LICENSE"
+basePath: "/"
+schemes:
+- "http"
+paths:
+  /render:
+    post:
+      summary: "Renders an entire space according the layout manager rules"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "State configuration. Full layout reference is available at the [layout documentation](https://github.com/ove/ove-services/blob/master/packages/ove-service-layout/docs/LAYOUTS.md) site."
+        required: true
+        schema:
+          $ref: "#/definitions/State"
+      responses:
+        200:
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/RenderedState"
+        500:
+          description: "validation error"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  errors:
+                    type: "array"
+                    items:
+                      type: "string"
+
+definitions:
+  State:
+    type: "object"
+    properties:
+      oveSpace:
+        anyOf:
+        - type: string
+        - type: object
+          properties:
+            geometry:
+              type: object
+              properties:
+                x:
+                  type: integer
+                y:
+                  type: integer
+                w:
+                  type: integer
+                h:
+                  type: integer
+              required:
+              - x
+              - y
+              - w
+              - h
+          required:
+          - geometry
+      canvas:
+        type: object
+        properties:
+          layout:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [static, percent, grid]
+          sections:
+            type: array
+            items:
+              $ref: "#/components/schemas/Section"
+    example: { "oveSpace": "http://localhost:3004/space-info", "canvas": { "layout": { "type": "static" }, "sections": [ { "name": "container1", "type": "container", "layout": { "type": "grid", "cols": 16, "rows": 4 }, "positionConstraints": { "x": 10, "y": 20, "w": 100, "h": 200 }, "sections": [ { "name": "section1", "type": "section", "positionConstraints": { "r": 1, "c": 1, "w": 4, "h": 2 }, "app": {} } ] } ] } }
+  RenderedState:
+    type: object
+      properties:
+        oveSpace:
+          type: object
+        canvas:
+          type: object
+          properties:
+            geometry:
+              type: object
+              properties:
+                x:
+                  type: "integer"
+                  format: "int32"
+                y:
+                  type: "integer"
+                  format: "int32"
+                w:
+                  type: "integer"
+                  format: "int32"
+                h:
+                  type: "integer"
+                  format: "int32"
+            sections:
+              type: array
+              items:
+                $ref: "#/components/schemas/RenderedSection"
+    example: { "oveSpace": "http://localhost:3004/space-info", "canvas": { "layout": { "type": "static" }, "sections": [ { "name": "container1", "type": "container", "layout": { "type": "grid", "cols": 16, "rows": 4 }, "positionConstraints": { "x": 10, "y": 20, "w": 100, "h": 200 }, "sections": [ { "name": "section1", "type": "section", "positionConstraints": { "r": 1, "c": 1, "w": 4, "h": 2 }, "app": {}, "geometry": { "x": 16, "y": 70, "w": 25, "h": 100 } } ], "geometry": { "x": 10, "y": 20, "w": 100, "h": 200 } } ], "geometry": { "x": 0, "y": 0, "w": 30720, "h": 4320 } } }
+
+components:
+  schemas:
+    Section:
+      type: object
+        properties:
+          name:
+            type: string
+          type:
+            type: string
+            enum: [container, section]
+          layout:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [static, percent, grid]
+              required:
+              - type
+          positionConstraints:
+            type: object
+          sections:
+            type: array
+            items:
+              $ref: "#/components/schemas/Section"
+        required:
+        - type
+        - layout
+        - positionConstraints
+    RenderedSection:
+      type: object
+        properties:
+          name:
+            type: string
+          type:
+            type: string
+            enum: [container, section]
+          layout:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [static, percent, grid]
+              required:
+              - type
+          geometry:
+            type: object
+            properties:
+              x:
+                type: "integer"
+                format: "int32"
+              y:
+                type: "integer"
+                format: "int32"
+              w:
+                type: "integer"
+                format: "int32"
+              h:
+                type: "integer"
+                format: "int32"
+          sections:
+            type: array
+            items:
+              $ref: "#/components/schemas/RenderedSection"
+        required:
+        - type
+        - layout
+        - geometry
