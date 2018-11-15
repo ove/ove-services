@@ -25,6 +25,22 @@ npm run start:mockup
 
 This will spin up a json mockup rest server, exposing the following url: [http://localhost:3004/space-info](http://localhost:3004/space-info).
 
+## Docker
+
+Alternatively, you can use docker to build this image:
+
+```sh
+./build.sh
+```
+
+In order to run the image, you can customize the docker-compose file or run the default configuration:
+
+```sh
+SERVICE_VERSION="latest" docker-compose up -d
+```
+
+The service runs on port 8080 on localhost.
+
 ## Available layouts
 
 The layouts and parameters are available in the [layouts](docs/LAYOUTS.md) document.
