@@ -4,12 +4,15 @@
 require("./validator/extensions");
 
 const HttpStatus = require("http-status-codes");
-const cors = require('cors');
+const cors = require("cors");
 
 const logger = require("debug")("layout:app");
 
 const express = require("express");
 const app = express();
+const swaggerUi = require("swagger-ui-express");
+const YAML = require("yamljs");
+const swaggerDocument = YAML.load("./swagger.yaml");
 
 const {normalizePort, convertError} = require("./util");
 
@@ -21,6 +24,8 @@ registerAllLayouts();
 app.use(cors());
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.post("/render", renderRoute);
 
