@@ -4,4 +4,4 @@ services:
     image: ovehub/ove-service-layout:${SERVICE_VERSION}
     build: .
     ports:
-    - "8080:8080"
+    - "8180:8180"

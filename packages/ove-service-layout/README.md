@@ -39,7 +39,7 @@ In order to run the image, you can customize the docker-compose file or run the 
 SERVICE_VERSION="latest" docker-compose up -d
 ```
 
-The service runs on port 8080 on localhost.
+The service runs on port 8180 on localhost.
 
 ## Available layouts
 
