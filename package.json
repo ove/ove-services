@@ -2,6 +2,14 @@
   "name": "ove",
   "private": true,
   "license": "MIT",
+  "scripts": {
+    "install": "lerna bootstrap --hoist --no-ci",
+    "clean": "lerna run clean",
+    "build": "lerna run build",
+    "build:clean": "lerna run clean && lerna run build",
+    "lint": "lerna run lint",
+    "test": "lerna run test"
+  },
   "devDependencies": {
     "babel-cli": "6.26.0",
     "eslint": "5.9.0",
