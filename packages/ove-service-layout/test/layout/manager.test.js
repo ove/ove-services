@@ -55,8 +55,6 @@ test("Render valid", () => {
     body = {
         "oveSpace": {
             "geometry": {
-                "x": 0,
-                "y": 0,
                 "w": 100,
                 "h": 100
             }
