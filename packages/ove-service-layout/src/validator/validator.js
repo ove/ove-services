@@ -10,8 +10,6 @@ let requestValidators = {
                 single: {url: {allowLocal: true}},
                 object: {
                     "geometry": {presence: true, isNotEmpty: true},
-                    "geometry.x": {presence: true, isNumber: true},
-                    "geometry.y": {presence: true, isNumber: true},
                     "geometry.w": {presence: true, isNumber: true},
                     "geometry.h": {presence: true, isNumber: true}
                 }
