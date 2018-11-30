@@ -1,41 +1,11 @@
-# Open Visualisation Environment
+# Open Visualisation Environment - Services
 
-Open Visualisation Environment (OVE) is an open-source software stack, designed to be used in large high resolution display (LHRD) environments like the [Imperial College](http://www.imperial.ac.uk) [Data Science Institute's](http://www.imperial.ac.uk/data-science/) [Data Observatory](http://www.imperial.ac.uk/data-science/data-observatory/).
+This repository contains a collection of microservices designed to support an [Open Visualisation Environment (OVE)](https://github.com/ove/ove) installation.
 
-We welcome collaboration under our [Code of Conduct](https://github.com/ove/ove-services/blob/master/CODE_OF_CONDUCT.md).
+OVE is an open-source software stack, designed to be used in large high resolution display (LHRD) environments like the [Imperial College](http://www.imperial.ac.uk) [Data Science Institute's](http://www.imperial.ac.uk/data-science/) [Data Observatory](http://www.imperial.ac.uk/data-science/data-observatory/).
 
-## Build Instructions
+We welcome collaboration under our [Code of Conduct](https://github.com/ove/ove-apps/blob/master/CODE_OF_CONDUCT.md).
 
-The build system is based on [Lerna](https://lernajs.io/) using [Babel](http://babeljs.io/) for [Node.js](https://nodejs.org/en/) and uses a [PM2](http://pm2.keymetrics.io/) runtime.
+OVE needs to be installed before using OVE Services. The [OVE Documentation](https://dsi.gitbook.io/ove) provides [installation instructions](https://dsi.gitbook.io/ove/installation) and a [user guide](https://dsi.gitbook.io/ove/usage).
 
-### Prerequisites
-
-* [git](https://git-scm.com/downloads)
-* [Node.js](https://nodejs.org/en/) (v8.0+)
-* [npm](https://www.npmjs.com/)
-* [npx](https://www.npmjs.com/package/npx) `npm install -global npx`
-* [PM2](http://pm2.keymetrics.io/) `npm install -global pm2`
-* [Lerna](https://lernajs.io/)  `npm install -global lerna`
-
-### Build
-
-Setup the lerna environment:
-
-* `git clone https://github.com/ove/ove-services`
-* `cd ove-services`
-* `lerna bootstrap --hoist`
-
-Build and start runtime:
-
-* `lerna run clean`
-* `lerna run build`
-* `pm2 start pm2.json`
-
-### Stop
-
-* `pm2 stop pm2.json`
-* `pm2 delete pm2.json`
-
-## Docker
-
-Each service has a docker image which can be built and configured individually. Please follow the guide for each service.
+As of now, this repository only contains a [Layout](./packages/ove-service-layout) service.
