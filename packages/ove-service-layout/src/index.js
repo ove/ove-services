@@ -6,7 +6,8 @@ require("./validator/extensions");
 const HttpStatus = require("http-status-codes");
 const cors = require("cors");
 
-const logger = require("debug")("layout:app");
+const { Utils } = require("@ove-lib/utils")();
+const log = Utils.Logger("layout:app");
 
 const express = require("express");
 const app = express();
@@ -32,9 +33,9 @@ app.post("/render", renderRoute);
 // eslint-disable-next-line no-unused-vars
 app.use((error, req, res, next) => {
     error = convertError(error);
-    logger("error", JSON.stringify(error), "for request", JSON.stringify(req.body));
+    log.error(JSON.stringify(error), "for request", JSON.stringify(req.body));
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(error);
 });
 
 const port = normalizePort(process.env.PORT || "3000");
-app.listen(port, () => logger(`Listening on port ${port}!`));
+app.listen(port, () => log.info(`Listening on port ${port}!`));
