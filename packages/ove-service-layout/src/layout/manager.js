@@ -2,7 +2,8 @@ const validate = require("validate.js");
 const {getName} = require("../util");
 const {validateRequest} = require("../validator/validator");
 
-const logger = require("debug")("layout:manager");
+const { Utils } = require("@ove-lib/utils")();
+const log = Utils.Logger("layout:manager");
 
 class LayoutManager {
     constructor() {
@@ -50,7 +51,7 @@ class LayoutManager {
     renderContainer(container) {
         if (container.type === "container") {
             let layout = this.getLayout(container);
-            logger(`Layout selected ${layout.name()} for ${getName(container)}`);
+            log.info(`Layout selected ${layout.name()} for ${getName(container)}`);
             for (let section of container.sections) {
                 let errors = layout.validate(section, container);
                 if (errors) {
@@ -78,7 +79,7 @@ function registerAllLayouts() {
     manager.register(new GridLayout());
     manager.register(new PercentLayout());
 
-    logger("Available layouts", manager.layouts);
+    log.info("Available layouts", manager.layouts);
 }
 
 exports.layoutManager = manager;
