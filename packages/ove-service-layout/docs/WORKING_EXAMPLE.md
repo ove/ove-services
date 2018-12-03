@@ -1,22 +1,22 @@
 # Working example
 
-**Note:** The **oveSpace** field can be either a valid URL pointing to an OVE space info endpoint or a geometry object, e.g.:
+**Note:** The **oveSpaceGeometry** field can be either a valid URL pointing to an OVE space info endpoint or a geometry object, e.g.:
 
 ```json
-{"oveSpace": "http://localhost:3004/space-info"}
+{"oveSpaceGeometry": "http://localhost:3004/spaces/mockup/geometry"}
 ```
 
 OR
 
 ```json
-{"oveSpace": {"geometry": {"x": 0, "y":0, "w": 100, "h": 100}}}
+{"oveSpaceGeometry":  {"w": 100, "h": 100}}
 ```
 
 For the following request, we use an OVE URL:
 
 ```json
 {
-  "oveSpace": "http://localhost:3004/space-info",
+  "oveSpaceGeometry": "http://localhost:3004/spaces/mockup/geometry",
   "canvas": {
     "layout": {
       "type": "static"
@@ -59,7 +59,7 @@ Should return:
 
 ```json
 {  
-  "oveSpace": "http://localhost:3004/space-info",
+  "oveSpaceGeometry": "http://localhost:3004/spaces/mockup/geometry",
   "canvas": {
     "layout": {
       "type": "static"

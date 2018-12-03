@@ -14,8 +14,8 @@ exports.renderRoute = (req, res) => {
 
     logger("Request", req.body);
 
-    oveClient.getConfiguration(req.body["oveSpace"]).then(config => {
-        res.status(HttpStatus.OK).json(layoutManager.renderCanvas(req.body, config.geometry));
+    oveClient.getConfiguration(req.body["oveSpaceGeometry"]).then(geometry => {
+        res.status(HttpStatus.OK).json(layoutManager.renderCanvas(req.body, geometry));
     }).catch(error => {
         error = convertError(error);
         logger("error", JSON.stringify(error), "for request", JSON.stringify(req.body));

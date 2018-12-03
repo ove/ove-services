@@ -16,7 +16,7 @@
   "scripts": {
     "start": "DEBUG=layout:* node dist/index.js --color",
     "start:dev": "DEBUG=layout:* nodemon -e yaml",
-    "start:mockup": "json-server --watch mockup/routes.json --port 3004",
+    "start:mockup": "json-server --watch mockup/db.json --routes mockup/routes.json --port 3004",
     "clean": "npx rimraf dist",
     "build": "npx babel-cli src --out-dir dist",
     "build:clean": "npm run clean && npm run build",
