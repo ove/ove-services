@@ -32,8 +32,8 @@ class LayoutManager {
             type: "container",
             name: "canvas",
             geometry: {
-                x: oveLayout.x,
-                y: oveLayout.y,
+                x: oveLayout.x || 0,
+                y: oveLayout.y || 0,
                 w: oveLayout.w,
                 h: oveLayout.h
             }

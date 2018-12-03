@@ -1,4 +1,4 @@
-const {layoutManager, registerAllLayouts} = require("../../src/layout/manager");
+const { layoutManager, registerAllLayouts } = require("../../src/layout/manager");
 
 registerAllLayouts();
 
@@ -9,10 +9,10 @@ test("Test layouts", () => {
 });
 
 test("Render valid", () => {
-    let oveSpace = {x: 0, y: 0, w: 100, h: 100};
+    let oveSpaceGeometry = { x: 0, y: 0, w: 100, h: 100 };
 
     let body = {
-        "oveSpace": "http://localhost:3004/space-info",
+        "oveSpaceGeometry": "http://localhost:3004/spaces/mockup/geometry",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -50,16 +50,12 @@ test("Render valid", () => {
         }
     };
 
-    expect(() => layoutManager.renderCanvas(body, oveSpace)).not.toThrow();
+    expect(() => layoutManager.renderCanvas(body, oveSpaceGeometry)).not.toThrow();
 
     body = {
-        "oveSpace": {
-            "geometry": {
-                "x": 0,
-                "y": 0,
-                "w": 100,
-                "h": 100
-            }
+        "oveSpaceGeometry": {
+            "w": 100,
+            "h": 100
         },
         "canvas": {
             "layout": {
@@ -98,14 +94,14 @@ test("Render valid", () => {
         }
     };
 
-    expect(() => layoutManager.renderCanvas(body, oveSpace)).not.toThrow();
+    expect(() => layoutManager.renderCanvas(body, oveSpaceGeometry)).not.toThrow();
 });
 
 test("Render invalid - invalid container type", () => {
-    let oveSpace = {x: 0, y: 0, w: 100, h: 100};
+    let oveSpaceGeometry = { x: 0, y: 0, w: 100, h: 100 };
 
     let body = {
-        "oveSpace": "http://localhost:3004/space-info",
+        "oveSpaceGeometry": "http://localhost:3004/spaces/mockup/geometry",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -142,14 +138,14 @@ test("Render invalid - invalid container type", () => {
             ]
         }
     };
-    expect(() => layoutManager.renderCanvas(body, oveSpace)).toThrow();
+    expect(() => layoutManager.renderCanvas(body, oveSpaceGeometry)).toThrow();
 });
 
 test("Render invalid - invalid section type", () => {
-    let oveSpace = {x: 0, y: 0, w: 100, h: 100};
+    let oveSpaceGeometry = { x: 0, y: 0, w: 100, h: 100 };
 
     let body = {
-        "oveSpace": "http://localhost:3004/space-info",
+        "oveSpaceGeometry": "http://localhost:3004/spaces/mockup/geometry",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -186,14 +182,14 @@ test("Render invalid - invalid section type", () => {
             ]
         }
     };
-    expect(() => layoutManager.renderCanvas(body, oveSpace)).toThrow();
+    expect(() => layoutManager.renderCanvas(body, oveSpaceGeometry)).toThrow();
 });
 
 test("Render invalid - invalid container types", () => {
-    let oveSpace = {x: 0, y: 0, w: 100, h: 100};
+    let oveSpaceGeometry = { x: 0, y: 0, w: 100, h: 100 };
 
     let body = {
-        "oveSpace": "http://localhost:3004/space-info",
+        "oveSpaceGeometry": "http://localhost:3004/spaces/mockup/geometry",
         "canvas": {
             "layout": {
                 "type": "unknown"
@@ -230,10 +226,10 @@ test("Render invalid - invalid container types", () => {
             ]
         }
     };
-    expect(() => layoutManager.renderCanvas(body, oveSpace)).toThrow();
+    expect(() => layoutManager.renderCanvas(body, oveSpaceGeometry)).toThrow();
 
     body = {
-        "oveSpace": "http://localhost:3004/space-info",
+        "oveSpaceGeometry": "http://localhost:3004/spaces/mockup/geometry",
         "canvas": {
             "layout": {
                 "type": null
@@ -270,14 +266,14 @@ test("Render invalid - invalid container types", () => {
             ]
         }
     };
-    expect(() => layoutManager.renderCanvas(body, oveSpace)).toThrow();
+    expect(() => layoutManager.renderCanvas(body, oveSpaceGeometry)).toThrow();
 });
 
 test("Render invalid - section error", () => {
-    let oveSpace = {x: 0, y: 0, w: 100, h: 100};
+    let oveSpaceGeometry = { x: 0, y: 0, w: 100, h: 100 };
 
     let body = {
-        "oveSpace": "http://localhost:3004/space-info",
+        "oveSpaceGeometry": "http://localhost:3004/spaces/mockup/geometry",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -314,5 +310,5 @@ test("Render invalid - section error", () => {
             ]
         }
     };
-    expect(() => layoutManager.renderCanvas(body, oveSpace)).toThrow();
+    expect(() => layoutManager.renderCanvas(body, oveSpaceGeometry)).toThrow();
 });

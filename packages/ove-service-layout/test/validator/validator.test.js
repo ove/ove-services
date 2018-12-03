@@ -1,4 +1,4 @@
-const {validateRequest} = require("../../src/validator/validator");
+const { validateRequest } = require("../../src/validator/validator");
 
 test("Invalid request path", () => {
     expect(() => validateRequest("invalid", {})).not.toThrow();
@@ -6,8 +6,7 @@ test("Invalid request path", () => {
 
 test("Valid request", () => {
     expect(() => validateRequest("render", {
-
-        "oveSpace": "http://localhost/",
+        "oveSpaceGeometry": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -48,8 +47,7 @@ test("Valid request", () => {
 
 test("Invalid request - empty sections", () => {
     expect(() => validateRequest("render", {
-
-        "oveSpace": "http://localhost/",
+        "oveSpaceGeometry": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -59,8 +57,7 @@ test("Invalid request - empty sections", () => {
     })).toThrow();
 
     expect(() => validateRequest("render", {
-
-        "oveSpace": "http://localhost/",
+        "oveSpaceGeometry": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -71,8 +68,7 @@ test("Invalid request - empty sections", () => {
 
 test("Invalid request - empty layout on canvas", () => {
     expect(() => validateRequest("render", {
-
-        "oveSpace": "http://localhost/",
+        "oveSpaceGeometry": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": ""
@@ -94,8 +90,7 @@ test("Invalid request - empty layout on canvas", () => {
     })).toThrow();
 
     expect(() => validateRequest("render", {
-
-        "oveSpace": "http://localhost/",
+        "oveSpaceGeometry": "http://localhost/",
         "canvas": {
             "layout": {},
             "sections": [
@@ -115,8 +110,7 @@ test("Invalid request - empty layout on canvas", () => {
     })).toThrow();
 
     expect(() => validateRequest("render", {
-
-        "oveSpace": "http://localhost/",
+        "oveSpaceGeometry": "http://localhost/",
         "canvas": {
             "sections": [
                 {
@@ -137,8 +131,7 @@ test("Invalid request - empty layout on canvas", () => {
 
 test("Invalid request - empty layout on container", () => {
     expect(() => validateRequest("render", {
-
-        "oveSpace": "http://localhost/",
+        "oveSpaceGeometry": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -175,8 +168,7 @@ test("Invalid request - empty layout on container", () => {
     })).toThrow();
 
     expect(() => validateRequest("render", {
-
-        "oveSpace": "http://localhost/",
+        "oveSpaceGeometry": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -211,8 +203,7 @@ test("Invalid request - empty layout on container", () => {
     })).toThrow();
 
     expect(() => validateRequest("render", {
-
-        "oveSpace": "http://localhost/",
+        "oveSpaceGeometry": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -248,8 +239,7 @@ test("Invalid request - empty layout on container", () => {
 
 test("Invalid request - empty sections on container", () => {
     expect(() => validateRequest("render", {
-
-        "oveSpace": "http://localhost/",
+        "oveSpaceGeometry": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -274,8 +264,7 @@ test("Invalid request - empty sections on container", () => {
     })).toThrow();
 
     expect(() => validateRequest("render", {
-
-        "oveSpace": "http://localhost/",
+        "oveSpaceGeometry": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -301,8 +290,7 @@ test("Invalid request - empty sections on container", () => {
 
 test("Invalid request - sections with layouts", () => {
     expect(() => validateRequest("render", {
-
-        "oveSpace": "http://localhost/",
+        "oveSpaceGeometry": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -329,8 +317,7 @@ test("Invalid request - sections with layouts", () => {
 
 test("Invalid request - sections with sections", () => {
     expect(() => validateRequest("render", {
-
-        "oveSpace": "http://localhost/",
+        "oveSpaceGeometry": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -355,7 +342,7 @@ test("Invalid request - sections with sections", () => {
 
 test("Invalid request - empty name", () => {
     expect(() => validateRequest("render", {
-        "oveSpace": "http://localhost/",
+        "oveSpaceGeometry": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"
@@ -378,7 +365,7 @@ test("Invalid request - empty name", () => {
     })).toThrow();
 
     expect(() => validateRequest("render", {
-        "oveSpace": "http://localhost/",
+        "oveSpaceGeometry": "http://localhost/",
         "canvas": {
             "layout": {
                 "type": "static"

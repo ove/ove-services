@@ -5,15 +5,12 @@ const validate = require("validate.js");
 
 let requestValidators = {
     render: {
-        "oveSpace": {
+        "oveSpaceGeometry": {
             presence: true, objectValidator: {
                 single: {url: {allowLocal: true}},
                 object: {
-                    "geometry": {presence: true, isNotEmpty: true},
-                    "geometry.x": {presence: true, isNumber: true},
-                    "geometry.y": {presence: true, isNumber: true},
-                    "geometry.w": {presence: true, isNumber: true},
-                    "geometry.h": {presence: true, isNumber: true}
+                    "w": {presence: true, isNumber: true},
+                    "h": {presence: true, isNumber: true}
                 }
             }
         },
@@ -30,11 +27,8 @@ let requestValidators = {
         }
     },
     oveResponse: {
-        "geometry": {presence: true, isNotEmpty: true},
-        "geometry.x": {presence: true, isNumber: true},
-        "geometry.y": {presence: true, isNumber: true},
-        "geometry.w": {presence: true, isNumber: true},
-        "geometry.h": {presence: true, isNumber: true}
+        "w": {presence: true, isNumber: true},
+        "h": {presence: true, isNumber: true}
     }
 };
 
