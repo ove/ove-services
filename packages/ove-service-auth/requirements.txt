@@ -1,0 +1,6 @@
+namedlist
+bcrypt==3.1.5
+falcon==1.4.1
+gunicorn==19.9.0
+PyJWT==1.7.1
+requests==2.21.0

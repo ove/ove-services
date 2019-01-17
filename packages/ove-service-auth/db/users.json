@@ -1,0 +1,9 @@
+[
+  {
+    "id": "admin",
+    "password": "abcdefg",
+    "access_tokens": [
+      "slightly-more-secure-token-because-it's-longer"
+    ]
+  }
+]

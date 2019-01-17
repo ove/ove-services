@@ -1,0 +1,8 @@
+{
+  "read": [
+    "very-secure-token"
+  ],
+  "write": [
+    "slightly-more-secure-token-because-it's-longer"
+  ]
+}
