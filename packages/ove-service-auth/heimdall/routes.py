@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-import traceback
 import json
 import logging
 
@@ -9,6 +8,7 @@ import bcrypt
 
 from heimdall.const import *
 from heimdall.managers import UserManager
+from heimdall.util import get_json_data
 
 
 class LoginResource:
@@ -23,14 +23,9 @@ class LoginResource:
         self.token_expiration = timedelta(seconds=jwt_token_expiration_seconds)
 
     def on_post(self, req: falcon.Request, resp: falcon.Response):
-        try:
-            req_stream = req.stream.read()
-            if isinstance(req_stream, bytes):
-                data = json.loads(req_stream.decode())
-            else:
-                data = json.loads(req.stream.read())
-        except Exception:
-            raise falcon.HTTPBadRequest("Invalid data", traceback.format_exc())
+        data = get_json_data(req)
+        if data is None:
+            raise falcon.HTTPBadRequest("Invalid data", "The login data should not be empty")
 
         unique_id = data.get("id", None)
         password = data.get("password", "")

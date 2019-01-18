@@ -111,12 +111,17 @@ class ServiceProxyManager:
                 self._data[k] = []
                 if isinstance(v, (list, tuple)):
                     for item in v:
-                        self._data[k].append(item if item.endswith("/") else item + "/")
+                        self._data[k].append(_normalize_url(item))
                 elif isinstance(v, str):
-                    self._data[k].append(v if v.endswith("/") else v + "/")
+                    self._data[k].append(_normalize_url(v))
 
         except:
             logging.error("Unable to service config = %s. %s", config_path, sys.exc_info()[1])
+
+    def add_service(self, service_name: str, service_url: str):
+        services = self._data.get(service_name, [])
+        services.append(_normalize_url(service_url))
+        self._data[service_name] = services
 
     def get_url(self, service_name: str) -> Union[str, None]:
         services = self._data.get(service_name, [])
@@ -127,3 +132,7 @@ class ServiceProxyManager:
         else:
             # load balancing the hell out of it
             return random.choice(services)
+
+
+def _normalize_url(item: str) -> str:
+    return item if item.endswith("/") else item + "/"

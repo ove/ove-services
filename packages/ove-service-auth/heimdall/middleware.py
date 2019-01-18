@@ -12,19 +12,18 @@ _HTTP_IGNORE_METHODS = {'CONNECT', 'HEAD', 'OPTIONS', 'TRACE'}
 _HTTP_READ_METHODS = {'GET'}
 _HTTP_WRITE_METHODS = {'DELETE', 'PATCH', 'POST', 'PUT'}
 
-# todo; redo this
-_PUBLIC_PATHS = {"/auth/login"}
-
 
 class AuthMiddleware:
-    def __init__(self, jwt_key: str, jwt_token_issuer: str = "heimdall", access_manager: AccessManager = None):
+    def __init__(self, jwt_key: str, jwt_token_issuer: str = "heimdall", access_manager: AccessManager = None,
+                 public_paths: set = None):
         self.jwt_key = jwt_key
         self.token_issuer = jwt_token_issuer
         self.access_manager = access_manager
+        self.public_paths = public_paths if public_paths is not None else {}
 
     def process_request(self, req: falcon.Request, _resp: falcon.Response):
         logging.debug("Processing request in AuthMiddleware: ")
-        if req.path in _PUBLIC_PATHS:
+        if req.path in self.public_paths:
             logging.debug("This is a public resource which does not need a valid token")
             return
 
