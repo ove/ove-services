@@ -1,5 +1,4 @@
 import logging
-from secrets import token_urlsafe
 
 import falcon
 
@@ -7,11 +6,11 @@ from heimdall.middleware import AuthMiddleware
 from heimdall.managers import UserManager, AccessManager, ServiceProxyManager
 from heimdall.proxy import ProxyAdapter
 from heimdall.routes import LoginResource
-from heimdall.util import parse_logging_lvl
+from heimdall.util import parse_logging_lvl, random_string
 
 
 def setup_app(
-        jwt_key: str = token_urlsafe(32), jwt_token_issuer: str = "heimdall", logging_level: str = "debug",
+        jwt_key: str = random_string(32), jwt_token_issuer: str = "heimdall", logging_level: str = "debug",
         access_enabled: bool = True, access_config: str = "db/access.json",
         login_enabled: bool = True, login_config: str = "db/users.json", login_hash_passwords: bool = True,
         proxy_enabled: bool = True, proxy_config: str = "db/services.json", proxy_forward: str = ""

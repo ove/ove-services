@@ -1,5 +1,6 @@
 import json
 import logging
+import random
 import traceback
 from typing import Union
 
@@ -29,3 +30,7 @@ def parse_logging_lvl(lvl_name: str) -> int:
         return logging._nameToLevel.get(lvl_name, logging.INFO)
     else:
         return logging.INFO
+
+
+def random_string(lenght: int = 10) -> str:
+    return "".join(random.sample("abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()?", lenght))
