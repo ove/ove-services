@@ -2,13 +2,7 @@ const validate = require("validate.js");
 
 exports.normalizePort = function (val) {
     let port = parseInt(val, 10);
-
-    if (port >= 0) {
-        // Port number
-        return port;
-    }
-
-    return false;
+    return (port >= 0) ? port : false;
 };
 
 exports.convertError = function (error) {
