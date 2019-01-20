@@ -8,7 +8,7 @@ cd ${scriptPath}/
 [[ ! -z "${GUNICORN_WORKERS}" ]] || GUNICORN_WORKERS="1"
 [[ ! -z "${GUNICORN_THREADS}" ]] || GUNICORN_THREADS="4"
 
-[[ ! -z "${JWT_TOKEN}" ]] || JWT_TOKEN="FDBfaWrqIFjX16duzpJ9ppTaMF0hN8EU"
+[[ ! -z "${JWT_TOKEN}" ]] || JWT_TOKEN=$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 64 | tr -d '\n')
 [[ ! -z "${JWT_ISSUER}" ]] || JWT_ISSUER="heimdall"
 
 [[ ! -z "${SERVICE_LOG_LEVEL}" ]] || SERVICE_LOG_LEVEL="info"

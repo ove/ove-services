@@ -1,0 +1,29 @@
+# visual studio code for node.js
+.vscode/
+
+# visual studio for .netcore
+.vs/
+obj/
+bin/
+*.csproj.user
+*.db
+
+# Pycharm project files
+.idea/
+*.iml
+
+# Python virtual env folders
+.env/
+env/
+venv/
+
+# Python build files
+build/
+*.pyc
+
+# logs
+*.log
+
+# Docker files
+Dockerfile
+.dockerignore
