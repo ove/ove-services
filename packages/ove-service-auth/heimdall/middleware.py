@@ -1,12 +1,12 @@
 import logging
 import sys
-from typing import Union
 
 import falcon
 import jwt
 
 from heimdall.const import *
-from heimdall.managers import AccessManager
+from heimdall.managers import AccessManager, LockManager
+from heimdall.util import get_token
 
 _HTTP_IGNORE_METHODS = {'CONNECT', 'HEAD', 'OPTIONS', 'TRACE'}
 _HTTP_READ_METHODS = {'GET'}
@@ -27,7 +27,7 @@ class AuthMiddleware:
             logging.debug("This is a public resource which does not need a valid token")
             return
 
-        token = self._parse_and_validate_token(self._get_token(req))
+        token = self._parse_and_validate_token(get_token(req, field=FIELD_AUTH_TOKEN))
         # authorisation
         if self.access_manager:
             self._check_access(method=req.method, resource=req.path, token=token)
@@ -63,11 +63,13 @@ class AuthMiddleware:
                                            'Please request a new token and try again.'),
                                           ['Basic'])
 
-    @staticmethod
-    def _get_token(req: falcon.Request) -> Union[str, None]:
-        token = req.get_header(FIELD_AUTH_TOKEN, None)
-        if token is None:
-            token = req.params.get(FIELD_AUTH_TOKEN, None)
-        if token is None:
-            token = req.cookies.get(FIELD_AUTH_TOKEN, None)
-        return token
+
+class LockMiddleware:
+    def __init__(self, manager: LockManager):
+        self.manager = manager
+
+    def process_request(self, req: falcon.Request, _resp: falcon.Response):
+        logging.debug("Processing request in LockMiddleware ...")
+        if self.manager.is_locked:
+            if not self.manager.validate(get_token(req, field=FIELD_LOCK_TOKEN)):
+                raise falcon.HTTPLocked("This API is locked", "You need the right key to access this API")

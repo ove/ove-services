@@ -6,6 +6,7 @@ from typing import Union, List
 
 import bcrypt
 
+from heimdall.util import random_string
 from heimdall.entities import User
 
 
@@ -132,6 +133,38 @@ class ServiceProxyManager:
         else:
             # load balancing the hell out of it
             return random.choice(services)
+
+
+class LockManager:
+    def __init__(self, key_length: int = 8):
+        self._key_length = key_length
+        self._key = random_string(self._key_length)
+
+        self.is_locked = False
+
+    def refresh(self):
+        self._key = random_string(self._key_length)
+        return self._key
+
+    def lock(self, key: str) -> Union[str, None]:
+        if self.validate(key):
+            self.is_locked = True
+            return self._key
+        else:
+            return None
+
+    def unlock(self, key: str) -> Union[str, None]:
+        if self.validate(key):
+            self.is_locked = False
+            return self.refresh()
+        else:
+            return None
+
+    def validate(self, key: str) -> bool:
+        return key == self._key
+
+    def get_lock(self) -> str:
+        return self._key
 
 
 def _normalize_url(item: str) -> str:

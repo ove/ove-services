@@ -5,3 +5,13 @@ FIELD_TOKEN_TARGET = "target"
 # these are standard JWT conventions used by PyJWT
 FIELD_EXPIRATION = "exp"
 FIELD_ISSUER = "iss"
+# lock constants
+FIELD_LOCK_TOKEN = "LOCK_TOKEN"
+FIELD_LOCK_STATUS = "status"
+LOCK_STATUS_LOCKED = "LOCKED"
+LOCK_STATUS_UNLOCKED = "UNLOCKED"
+
+FIELD_ACTION = "action"
+ACTION_LOCK = "lock"
+ACTION_UNLOCK = "unlock"
+ACTION_REFRESH = "refresh"

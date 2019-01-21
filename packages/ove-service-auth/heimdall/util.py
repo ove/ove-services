@@ -34,5 +34,18 @@ def parse_logging_lvl(lvl_name: str) -> int:
         return logging.INFO
 
 
-def random_string(lenght: int = 10) -> str:
-    return "".join(random.sample("abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()?", lenght))
+def random_string(length: int = 10) -> str:
+    return "".join(random.sample("abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()?", length))
+
+
+def get_token(req: falcon.Request, field: str) -> Union[str, None]:
+    token = req.get_header(field, None)
+    if token is not None:
+        return token
+
+    token = req.params.get(field, None)
+    if token is not None:
+        return token
+
+    # Because every time you lose something, you always find it in the very last place you would look.
+    return req.cookies.get(field, None)
