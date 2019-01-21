@@ -9,17 +9,19 @@ import falcon
 
 def get_json_data(req: falcon.Request) -> Union[dict, None]:
     try:
-        if req.content_length and req.content_length > 0:
-            return json.load(req.bounded_stream)
-        else:
-            return None
+        data = get_raw_data(req)
+        return json.loads(data) if data else None
     except Exception:
         raise falcon.HTTPBadRequest("Invalid data", traceback.format_exc())
 
 
-def get_raw_data(req: falcon.Request) -> str:
+def get_raw_data(req: falcon.Request) -> Union[str, None]:
     try:
-        return req.bounded_stream.read()
+        if req.content_length and req.content_length > 0:
+            req_stream = req.bounded_stream.read()
+            return req_stream.decode() if isinstance(req_stream, bytes) else req_stream
+        else:
+            return None
     except Exception:
         raise falcon.HTTPBadRequest("Invalid data", traceback.format_exc())
 
