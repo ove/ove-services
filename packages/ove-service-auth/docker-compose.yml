@@ -1,7 +1,7 @@
 version: '3'
 services:
-  ovehub-ove-auth:
-    image: ovehub/ove-auth
+  ovehub-ove-service-auth-base:
+    image: ovehub/ove-service-auth-base:latest-unstable
     build: .
     ports:
       - "8080:8080"

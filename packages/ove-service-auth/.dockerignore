@@ -27,3 +27,6 @@ build/
 # Docker files
 Dockerfile
 .dockerignore
+
+# do not include the config samples
+samples/

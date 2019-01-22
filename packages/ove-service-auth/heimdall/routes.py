@@ -24,8 +24,8 @@ class LoginResource:
         if data is None:
             raise falcon.HTTPBadRequest("Invalid data", "The login data should not be empty")
 
-        unique_id = data.get("id", None)
-        password = data.get("password", "")
+        unique_id = data.get(FIELD_ID, None)
+        password = data.get(FIELD_PASSWORD, "")
         user = self.manager.get_user(unique_id)
         if user and bcrypt.checkpw(password.encode('utf-8'), user.password):
             logging.debug("Valid user, jwt'ing!")
@@ -39,9 +39,9 @@ class LoginResource:
 
             token = jwt.encode(payload=payload, key=self.jwt_key, algorithm='HS256').decode("utf-8")
 
-            if req.params.get(FIELD_TOKEN_TARGET, None) == "cookie":
+            if req.params.get(FIELD_TOKEN_TARGET, None) == TOKEN_TARGET_COOKIE:
                 resp.set_cookie(FIELD_AUTH_TOKEN, token, path="/")
-            elif req.params.get(FIELD_TOKEN_TARGET, None) == "header":
+            elif req.params.get(FIELD_TOKEN_TARGET, None) == TOKEN_TARGET_HEADER:
                 resp.set_header(FIELD_AUTH_TOKEN, token)
             else:
                 resp.body = json.dumps({FIELD_AUTH_TOKEN: token})
