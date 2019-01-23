@@ -19,6 +19,7 @@ class UserManager:
         self._data = dict()
 
     def load(self, config_path: str, hash_passwords: bool = False):
+        # pylint: disable=W0702
         try:
             with open(config_path, mode="r") as fin:
                 data = json.loads(fin.read())
@@ -58,6 +59,7 @@ class AccessManager:
         self._read_tokens = set()
 
     def load(self, config_path: str):
+        # pylint: disable=W0702
         try:
             with open(config_path, mode="r") as fin:
                 data = json.loads(fin.read())
@@ -101,6 +103,7 @@ class ServiceProxyManager:
         self._data = dict()
 
     def load(self, config_path: str):
+        # pylint: disable=W0702
         try:
             with open(config_path, mode="r") as fin:
                 data = json.loads(fin.read())
@@ -132,7 +135,8 @@ class ServiceProxyManager:
             return services[0]
         else:
             # load balancing the hell out of it
-            return random.choice(services)
+            # this does not need to be secure
+            return random.choice(services)  # nosec
 
 
 class LockManager:

@@ -1,6 +1,5 @@
 FROM jamiehewland/alpine-pypy:3
-
-MAINTAINER Ovidiu Serban, o.serban@imperial.ac.uk
+LABEL maintainer="o.serban@imperial.ac.uk"
 
 WORKDIR /code
 
