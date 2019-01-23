@@ -168,7 +168,7 @@ provided via the **target** query parameter.
 
 ### Lock
 
-The lock api, if enabled, is available on the **/auth/lock** route. On GET, the API returns the status of the API: 
+The lock API, if enabled, is available on the **/auth/lock** route. On GET, the API returns the status of the API: 
 
 ```json
 {
