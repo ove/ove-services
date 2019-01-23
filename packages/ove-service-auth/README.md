@@ -177,7 +177,7 @@ The lock API, if enabled, is available on the **/auth/lock** route. On GET, the 
 }
 ```
 
-If the api is locked, only the status is returned if the right key is provided. Otherwise a HTTP 423 error is returned.
+If the API is locked, only the status is returned if the right key is provided. Otherwise a HTTP 423 error is returned.
 
 On POST, the API can be locked, unlocked or refresh by providing different actions. To refresh the key: 
 
