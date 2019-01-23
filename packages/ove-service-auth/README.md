@@ -10,7 +10,7 @@ configuration files.
 The request proxy supports two configurations: a global or service-based proxy. The service proxy supports basic
 load balancing.
 
-The proxy mechanism can be enabled by setting the **SERVICE_PROXY_ENABLED** environment variable, the default is **True**.
+The proxy mechanism is enabled by default, but can be disabled by setting the **SERVICE_PROXY_ENABLED** environment variable to **False**.
 
 In proxy mode the service maps all requests based on a path matching strategy:
 
