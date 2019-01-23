@@ -1,0 +1,12 @@
+version: '3'
+services:
+  ovehub-ove-service-scheduler:
+    image: ovehub/ove-service-scheduler:latest-unstable
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      GUNICORN_THREADS: "8"
+      SERVICE_LOG_LEVEL: "debug"
+      SERVICE_LOCK_ENABLED: "True"
+      SERVICE_PROXY_ENABLED: "True"
