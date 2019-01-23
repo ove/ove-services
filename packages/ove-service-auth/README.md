@@ -163,7 +163,7 @@ The login api, if enabled, is available on the **/auth/login** route. This api e
 }
 ```
 
-The jwt token is returned by default in the body of the response. A different location (header or cookie) can be 
+The JWT token is returned by default in the body of the response. A different location (header or cookie) can be 
 provided via the **target** query parameter.
 
 ### Lock
