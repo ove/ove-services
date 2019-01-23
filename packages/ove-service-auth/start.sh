@@ -14,18 +14,18 @@ cd ${scriptPath}/
 
 [[ ! -z "${SERVICE_LOG_LEVEL}" ]] || SERVICE_LOG_LEVEL="info"
 
-[[ ! -z "${SERVICE_ACCESS_ENABLED}" ]] || SERVICE_ACCESS_ENABLED="True" # python convention for bool variables
+[[ ! -z "${SERVICE_ACCESS_ENABLED}" ]] || SERVICE_ACCESS_ENABLED="False" # python convention for bool variables
 [[ ! -z "${SERVICE_ACCESS_CONFIG}" ]] || SERVICE_ACCESS_CONFIG="config/access.json"
 
-[[ ! -z "${SERVICE_LOGIN_ENABLED}" ]] || SERVICE_LOGIN_ENABLED="True" # python convention for bool variables
+[[ ! -z "${SERVICE_LOGIN_ENABLED}" ]] || SERVICE_LOGIN_ENABLED="False" # python convention for bool variables
 [[ ! -z "${SERVICE_LOGIN_CONFIG}" ]] || SERVICE_LOGIN_CONFIG="config/users.json"
 [[ ! -z "${SERVICE_LOGIN_HASH_PASSWORDS}" ]] || SERVICE_LOGIN_HASH_PASSWORDS="True" # python convention for bool variables
 
-[[ ! -z "${SERVICE_PROXY_ENABLED}" ]] || SERVICE_PROXY_ENABLED="True" # python convention for bool variables
+[[ ! -z "${SERVICE_PROXY_ENABLED}" ]] || SERVICE_PROXY_ENABLED="False" # python convention for bool variables
 [[ ! -z "${SERVICE_PROXY_CONFIG}" ]] || SERVICE_PROXY_CONFIG="config/services.json"
 [[ ! -z "${SERVICE_GLOBAL_PROXY_URL}" ]] || SERVICE_GLOBAL_PROXY_URL=""
 
-[[ ! -z "${SERVICE_LOCK_ENABLED}" ]] || SERVICE_LOCK_ENABLED="True" # python convention for bool variables
+[[ ! -z "${SERVICE_LOCK_ENABLED}" ]] || SERVICE_LOCK_ENABLED="False" # python convention for bool variables
 [[ ! -z "${SERVICE_LOCK_KEY_LENGTH}" ]] || SERVICE_LOCK_KEY_LENGTH="8"
 
 echo "Environment variables:"

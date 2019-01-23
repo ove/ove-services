@@ -25,17 +25,20 @@ def setup_app(
         access_manager = AccessManager()
         access_manager.load(config_path=access_config)
     else:
+        logging.info("Access control is disabled ...")
         access_manager = None
 
     if login_enabled:
         user_manager = UserManager()
         user_manager.load(config_path=login_config, hash_passwords=login_hash_passwords)
     else:
+        logging.info("Login management is disabled ...")
         user_manager = None
 
     if lock_enabled:
         lock_manager = LockManager(key_length=key_length)
     else:
+        logging.info("API locking is disabled ...")
         lock_manager = None
 
     _middleware = []
@@ -68,5 +71,7 @@ def setup_app(
         service_manager = ServiceProxyManager()
         service_manager.load(config_path=proxy_config)
         app.add_sink(prefix=r'/(?P<service>.+)/(?P<path>.*)', sink=ProxyAdapter(service_manager))
+    else:
+        logging.info("Proxy is disabled ...")
 
     return app
