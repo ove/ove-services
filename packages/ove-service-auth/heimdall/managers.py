@@ -120,7 +120,7 @@ class ServiceProxyManager:
                     self._data[k].append(_normalize_url(v))
 
         except:
-            logging.error("Unable to service config = %s. %s", config_path, sys.exc_info()[1])
+            logging.error("Unable to load service config = %s. %s", config_path, sys.exc_info()[1])
 
     def add_service(self, service_name: str, service_url: str):
         services = self._data.get(service_name, [])
