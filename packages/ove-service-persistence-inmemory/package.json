@@ -2,7 +2,7 @@
   "name": "@ove/ove-service-persistence-inmemory",
   "private": true,
   "version": "0.1.0",
-  "description": "OVE Persistence Service - InMemory",
+  "description": "OVE Persistence Service - In-Memory",
   "main": "dist/index.js",
   "scripts": {
     "clean": "npx rimraf dist",
