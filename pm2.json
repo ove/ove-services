@@ -8,7 +8,18 @@
       "script": "npm",
       "args": "run start",
       "env": {
-          "PORT": "8186"
+          "PORT": "8180"
+      }
+    },
+    {
+      "name": "@ove/ove-service-persistence-inmemory",
+      "cwd": "./packages/ove-service-persistence-inmemory",
+      "kill_timeout": 3000,
+      "restart_delay": 3000,
+      "script": "npm",
+      "args": "run start",
+      "env": {
+          "PORT": "8190"
       }
     }
   ]

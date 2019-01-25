@@ -8,7 +8,10 @@
     "build": "lerna run build",
     "build:clean": "lerna run clean && lerna run build",
     "lint": "lerna run lint",
-    "test": "lerna run test"
+    "test": "lerna run test",
+    "start": "pm2 start pm2.json",
+    "start:windows": "pm2 start pm2-windows.json",
+    "start:dev": "lerna run start:dev"
   },
   "devDependencies": {
     "babel-cli": "6.26.0",
@@ -21,6 +24,8 @@
     "remark": "10.0.1",
     "remark-preset-lint-recommended": "3.0.2",
     "lerna": "3.10.6",
-    "rimraf": "2.6.3"
+    "rimraf": "2.6.3",
+    "jest": "23.6.0",
+    "supertest": "3.4.1"
   }
 }
