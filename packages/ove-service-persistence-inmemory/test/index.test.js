@@ -14,7 +14,7 @@ app.use(express.json());
 require(path.join(srcDir, 'server', 'api'))(app, log, Utils);
 
 // Separate section for process.env tests
-describe('The OVE Persistence Service - InMemory', () => {
+describe('The OVE Persistence Service - In-Memory', () => {
     /* jshint ignore:start */
     // current version of JSHint does not support async/await
     it('should be able to successfully set, get and delete keys', async () => {

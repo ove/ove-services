@@ -1,4 +1,4 @@
-# OVE Persistence Service - InMemory
+# OVE Persistence Service - In-Memory
 
 This service provides persistence for the OVE framework using an in-memory storage implementation. This is also the most straightforward persistence service implementation and is not highly available.
 
