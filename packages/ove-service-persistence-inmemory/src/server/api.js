@@ -26,7 +26,6 @@ module.exports = function (app, log, Utils) {
                     Object.keys(appItems).forEach(function (item) {
                         result[item] = appItems[item].timestamp;
                     });
-                    log.debug('Getting list of keys of app:', key);
                     Utils.sendMessage(res, HttpStatus.OK, JSON.stringify(result));
                 }
             } else {
