@@ -1,0 +1,171 @@
+swagger: "2.0"
+info:
+  description: "OVE (Open Visualisation Environment) is an open-source software stack, designed to be used in large scale visualisation environments like the [Imperial College](http://www.imperial.ac.uk) [Data Science Institute's](http://www.imperial.ac.uk/data-science/) [Data Observatory](http://www.imperial.ac.uk/data-science/data-observatory/). OVE persistence services designed to provide persistent storage for OVE core and apps. Each OVE persistence service exposes a standard interaction API."
+  version: "@VERSION"
+  title: "@NAME"
+  contact:
+    email: "@AUTHOR"
+  license:
+    name: "@LICENSE License"
+    url: "https://raw.githubusercontent.com/ove/ove/master/LICENSE"
+basePath: "/"
+tags:
+- name: "common operations"
+  description: "Operations that can be performed on any persistence service"
+schemes:
+- "http"
+paths:
+  /:
+    get:
+      tags:
+      - "common operations"
+      summary: "Reads a list of keys with their timestamps across all applications"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "object"
+  /{app}:
+    get:
+      tags:
+      - "common operations"
+      summary: "Reads a list of keys with their timestamps for a specific application"
+      parameters:
+      - name: "app"
+        in: "path"
+        type: "string"
+        description: "Name of application"
+        required: true
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "object"
+  /{app}/{key}:
+    get:
+      tags:
+      - "common operations"
+      summary: "Reads an item"
+      parameters:
+      - name: "app"
+        in: "path"
+        type: "string"
+        description: "Name of application"
+        required: true
+      - name: "key"
+        in: "path"
+        type: "string"
+        description: "Key of item (ex:- my/sample/key)"
+        required: true
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Item"
+        404:
+          description: "not found"
+          schema:
+            type: "object"
+          properties:
+            error:
+              type: "string"
+              description: "Returns an error message 'key not found' if key was not found"
+    post:
+      tags:
+      - "common operations"
+      summary: "Creates or Updates an item"
+      parameters:
+      - name: "app"
+        in: "path"
+        type: "string"
+        description: "Name of application"
+        required: true
+      - name: "key"
+        in: "path"
+        type: "string"
+        description: "Key of item (ex:- my/sample/key)"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "The payload"
+        schema:
+          $ref: "#/definitions/Item"
+        required: true
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "object"
+        400:
+          description: "bad request"
+          schema:
+            type: "object"
+          properties:
+            error:
+              type: "string"
+              description: "Returns an error message 'key not provided' if the key was not provided. Returns an error message 'invalid key' if the provided key was invalid. Returns an error message 'invalid item' if the provided payload was invalid."
+    delete:
+      tags:
+      - "common operations"
+      summary: "Deletes an item"
+      parameters:
+      - name: "app"
+        in: "path"
+        type: "string"
+        description: "Name of application"
+        required: true
+      - name: "key"
+        in: "path"
+        type: "string"
+        description: "Key of item (ex:- my/sample/key)"
+        required: true
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "object"
+        400:
+          description: "bad request"
+          schema:
+            type: "object"
+          properties:
+            error:
+              type: "string"
+              description: "Returns an error message 'key not provided' if the key was not provided. Returns an error message 'invalid key' if the provided key was invalid."
+        404:
+          description: "not found"
+          schema:
+            type: "object"
+          properties:
+            error:
+              type: "string"
+              description: "Returns an error message 'key not found' if the key was not found."
+definitions:
+  Item:
+    description: "A persistable item"
+    type: "object"
+    properties:
+      value:
+        type: "number"
+        format: "float"
+        example: 1.234
+      type:
+        type: "string"
+        example: "number"
+      timestamp:
+        type: "integer"
+        format: "int32"
+        example: 150000
+externalDocs:
+  description: "Find out more about OVE"
+  url: "https://dsi.gitbook.io/ove"

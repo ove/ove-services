@@ -8,4 +8,7 @@ We welcome collaboration under our [Code of Conduct](https://github.com/ove/ove-
 
 OVE needs to be installed before using OVE Services. The [OVE Documentation](https://dsi.gitbook.io/ove) provides [installation instructions](https://dsi.gitbook.io/ove/installation) and a [user guide](https://dsi.gitbook.io/ove/usage).
 
-As of now, this repository only contains a [Layout](./packages/ove-service-layout) service.
+This repository contains the following OVE Apps:
+
+* [Layout](./packages/ove-service-layout) - Supports complex layouts in an OVE installation.
+* [Persistence (In-Memory)](./packages/ove-service-persistence-inmemory) - Provides in-memory persistence for the OVE framework.

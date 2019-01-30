@@ -1,0 +1,7 @@
+version: '3'
+services:
+  ovehub-ove-service-persistence-inmemory:
+    image: ovehub/ove-service-persistence-inmemory:${SERVICE_VERSION}
+    build: .
+    ports:
+    - "8190:8190"
