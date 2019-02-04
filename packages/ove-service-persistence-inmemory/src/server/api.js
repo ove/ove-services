@@ -24,7 +24,7 @@ module.exports = function (app, log, Utils) {
         }
 
         const key = req.url.substring(1).replace(/%2(F|f)/g, '/');
-        if (key.indexOf('/') === -1) {
+        if (!key.includes('/')) {
             // Unlike in the set and delete methods, the get method accepts paths with a single
             // segment. Such requests would return a list of keys belonging to a specific app.
             const appItems = items[key];
@@ -59,7 +59,7 @@ module.exports = function (app, log, Utils) {
             return;
         }
         const key = req.url.substring(1).replace(/%2(F|f)/g, '/');
-        if (key.indexOf('/') === -1) {
+        if (!key.includes('/')) {
             log.error('Invalid key:', key);
             Utils.sendMessage(res, HttpStatus.BAD_REQUEST,
                 JSON.stringify({ error: 'invalid key' }));
@@ -97,7 +97,7 @@ module.exports = function (app, log, Utils) {
         }
 
         const key = req.url.substring(1).replace(/%2(F|f)/g, '/');
-        if (key.indexOf('/') === -1) {
+        if (!key.includes('/')) {
             log.error('Invalid key:', key);
             Utils.sendMessage(res, HttpStatus.BAD_REQUEST,
                 JSON.stringify({ error: 'invalid key' }));
