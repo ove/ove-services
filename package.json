@@ -14,18 +14,20 @@
     "start:dev": "lerna run start:dev"
   },
   "devDependencies": {
-    "babel-cli": "6.26.0",
+    "@babel/cli": "^7.2.3",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^24.1.0",
     "eslint": "5.13.0",
     "eslint-config-standard": "12.0.0",
     "eslint-plugin-import": "2.16.0",
     "eslint-plugin-node": "8.0.1",
     "eslint-plugin-promise": "4.0.1",
     "eslint-plugin-standard": "4.0.0",
+    "jest": "24.1.0",
+    "lerna": "3.10.8",
     "remark": "10.0.1",
     "remark-preset-lint-recommended": "3.0.2",
-    "lerna": "3.10.8",
     "rimraf": "2.6.3",
-    "jest": "24.1.0",
-    "supertest": "3.4.1"
+    "supertest": "3.4.2"
   }
 }
