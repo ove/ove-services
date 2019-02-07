@@ -2,7 +2,7 @@ const Constants = {
     /**************************************************************
                                 Server
     **************************************************************/
-    SERVICE_NAME: 'in-memory'
+    SERVICE_NAME: 'persistence'
 };
 
 exports.Constants = Constants;
