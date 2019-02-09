@@ -4,8 +4,12 @@ const express = require('express');
 const app = express();
 const HttpStatus = require('http-status-codes');
 
+// Do not expose console during init.
+const OLD_CONSOLE = global.console;
+global.console = { log: jest.fn(x => x), warn: jest.fn(x => x), error: jest.fn(x => x) };
+
 const srcDir = path.join(__dirname, '..', 'src');
-const { Constants } = require(path.join(srcDir, './server/constants/inmemory'));
+const { Constants } = require(path.join(srcDir, './server/constants/persistence'));
 const { Utils } = require('@ove-lib/utils')(Constants.APP_NAME, app);
 const log = Utils.Logger(Constants.SERVICE_NAME);
 
@@ -13,8 +17,16 @@ log.debug('Using Express JSON middleware');
 app.use(express.json());
 require(path.join(srcDir, 'server', 'api'))(app, log, Utils);
 
+// Restore console before run.
+global.console = OLD_CONSOLE;
+
 // Separate section for process.env tests
 describe('The OVE Persistence Service - In-Memory', () => {
+    const OLD_CONSOLE = global.console;
+    beforeAll(() => {
+        global.console = { log: jest.fn(x => x), warn: jest.fn(x => x), error: jest.fn(x => x) };
+    });
+
     /* jshint ignore:start */
     // current version of JSHint does not support async/await
     it('should be able to successfully set, get and delete keys', async () => {
@@ -107,4 +119,8 @@ describe('The OVE Persistence Service - In-Memory', () => {
         expect(res.text).toEqual(JSON.stringify({ error: 'key not found' }));
     });
     /* jshint ignore:end */
+
+    afterAll(() => {
+        global.console = OLD_CONSOLE;
+    });
 });

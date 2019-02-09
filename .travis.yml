@@ -23,3 +23,4 @@ jobs:
       script:
         - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin 
         - packages/ove-service-layout/build.sh --push
+        - packages/ove-service-persistence-inmemory/build.sh --push

@@ -1,4 +1,4 @@
-const { Constants } = require('./server/constants/inmemory');
+const { Constants } = require('./server/constants/persistence');
 const path = require('path');
 const express = require('express');
 const app = express();
