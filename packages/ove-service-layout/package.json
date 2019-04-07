@@ -63,7 +63,7 @@
     "microtime": "3.0.0",
     "nodemon": "1.18.10",
     "supertest": "4.0.2",
-    "sync-request": "6.0.0"
+    "sync-request": "6.1.0"
   },
   "jest": {
     "collectCoverageFrom": [
