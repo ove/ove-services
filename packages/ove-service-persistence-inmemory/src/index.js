@@ -1,11 +1,14 @@
 const { Constants } = require('./server/constants/persistence');
 const path = require('path');
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const { Utils } = require('@ove-lib/utils')(Constants.APP_NAME, app);
 const log = Utils.Logger(Constants.SERVICE_NAME);
 const server = require('http').createServer(app);
 
+log.debug('Using CORS middleware');
+app.use(cors());
 log.debug('Using Express JSON middleware');
 app.use(express.json());
 
