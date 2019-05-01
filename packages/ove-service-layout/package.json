@@ -3,7 +3,7 @@
   "private": true,
   "description": "The layout service",
   "license": "MIT",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "author": "Ovidiu Serban, o.serban@imperial.ac.uk",
   "homepage": "https://github.com/ove/ove-services#README.md",
   "repository": {
@@ -28,7 +28,7 @@
     "test:benchmark": "node benchmark/benchmark.js"
   },
   "dependencies": {
-    "@ove-lib/utils": "0.4.0",
+    "@ove-lib/utils": "0.4.1",
     "body-parser": "1.19.0",
     "cors": "latest",
     "express": "4.16.4",

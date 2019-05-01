@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   description: "OVE (Open Visualisation Environment) is an open-source software stack, designed to be used in large scale visualisation environments like the [Imperial College](http://www.imperial.ac.uk) [Data Science Institute's](http://www.imperial.ac.uk/data-science/) [Data Observatory](http://www.imperial.ac.uk/data-science/data-observatory/). The OVE Layout Service provides functionality for various layouts to be rendered by OVE."
-  version: "0.1.1"
+  version: "0.2.0"
   title: "OVE Layout Service"
   contact:
     email: "Ovidiu Serban, o.serban@imperial.ac.uk"
