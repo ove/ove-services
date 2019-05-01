@@ -28,7 +28,7 @@
     "test:benchmark": "node benchmark/benchmark.js"
   },
   "dependencies": {
-    "@ove-lib/utils": "0.4.0",
+    "@ove-lib/utils": "0.4.1",
     "body-parser": "1.19.0",
     "cors": "latest",
     "express": "4.16.4",
