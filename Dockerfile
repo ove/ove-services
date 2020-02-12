@@ -1,4 +1,4 @@
-FROM node:10-stretch
+FROM node:13-stretch
 WORKDIR /usr/src/app
 
 # Bundle app source
