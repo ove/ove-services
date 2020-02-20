@@ -3,7 +3,7 @@
   "private": true,
   "description": "The layout service",
   "license": "MIT",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "Ovidiu Serban, o.serban@imperial.ac.uk",
   "homepage": "https://github.com/ove/ove-services#README.md",
   "repository": {
