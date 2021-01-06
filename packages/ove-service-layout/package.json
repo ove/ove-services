@@ -61,7 +61,7 @@
     "jest-coverage-badges": "1.1.2",
     "json-server": "0.16.0",
     "microtime": "3.0.0",
-    "nodemon": "2.0.2",
+    "nodemon": "2.0.7",
     "supertest": "4.0.2",
     "sync-request": "6.1.0"
   },
