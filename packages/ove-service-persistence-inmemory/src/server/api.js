@@ -4,7 +4,7 @@ const HttpStatus = require('http-status-codes');
 // Logs have been left out from most of the methods on purpose, as it contributes to significant
 // log file sizes.
 module.exports = function (app, log, Utils) {
-    let items = {};
+    const items = {};
     const getKeys = function (req, res) {
         // Keys do not start with a slash like paths in a URI, and therefore we ignore it. If the
         // path was '/', the key would be an empty string. For all other paths, the first path
@@ -12,7 +12,7 @@ module.exports = function (app, log, Utils) {
         // would correspond to the actual key used in an app.
         if (!req.url.substring(1)) {
             // If the key was an empty string, we return a list for keys belonging to all apps.
-            let result = {};
+            const result = {};
             Object.keys(items).forEach(function (appName) {
                 Object.keys(items[appName]).forEach(function (item) {
                     result[appName + '/' + item] = items[appName][item].timestamp;
@@ -31,7 +31,7 @@ module.exports = function (app, log, Utils) {
             if (appItems === undefined) {
                 Utils.sendEmptySuccess(res);
             } else {
-                let result = {};
+                const result = {};
                 Object.keys(appItems).forEach(function (item) {
                     result[item] = appItems[item].timestamp;
                 });
