@@ -33,7 +33,7 @@
     "cors": "2.8.5",
     "express": "4.17.1",
     "http-status-codes": "2.1.4",
-    "node-fetch": "2.6.1",
+    "node-fetch": "2.6.7",
     "swagger-ui-express": "4.1.6",
     "underscore": "1.13.1",
     "validate.js": "0.13.1",
