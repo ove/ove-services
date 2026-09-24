@@ -1,3 +1,10 @@
+🚨 This repository has been replaced and is no longer actively maintained.
+
+Please use the new repository instead:
+https://github.com/dsi-icl/vizzy-studio/
+
+Please direct all future development, issues, and contributions there.
+
 # Open Visualisation Environment - Services
 
 The OVE Services repository contains microservices that provide non-[core](https://github.com/ove/ove) functionality for [Open Visualisation Environment (OVE)](https://ove.readthedocs.io/).
